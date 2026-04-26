@@ -50,7 +50,7 @@ app.use((req, res) => {
 
 // 6. GLOBAL ERROR HANDLER
 app.use((err, req, res, next) => {
-  console.error('[SERVER ERROR]', err);
+  console.error(`[SERVER ERROR] ${req.method} ${req.url}`, err);
   res.status(err.status || 500).json({ 
     message: err.message || 'Erreur interne du serveur',
     error: process.env.NODE_ENV === 'development' ? err : {}

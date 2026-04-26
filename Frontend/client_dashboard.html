@@ -273,10 +273,22 @@
           logout();
           return;
         }
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || 'Erreur serveur');
+        }
         const data = await res.json();
         renderReservations(data);
       } catch (err) {
         console.error('Error fetching reservations:', err);
+        document.getElementById('resaBody').innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align:center; padding:3rem; color:var(--red);">
+              <strong>Erreur lors du chargement :</strong> ${err.message}<br>
+              <button onclick="fetchReservations()" class="btn-ghost" style="margin-top:1rem; border-color:var(--blue); color:var(--blue);">Réessayer</button>
+            </td>
+          </tr>
+        `;
       }
     };
 

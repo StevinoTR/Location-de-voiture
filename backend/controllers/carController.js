@@ -22,7 +22,7 @@ exports.list = async (req, res, next) => {
     const cars = await Car.findAll({
       where,
       include: [
-        'entreprise',
+        { association: 'entreprise', attributes: ['id', 'prenom', 'nom', 'email'] },
         {
           association: 'reservations',
           required: false,
@@ -109,7 +109,23 @@ exports.getPhoto = async (req, res, next) => {
     if (!car || !car.photoUrl) return res.status(404).json({ message: 'Photo introuvable' });
 
     const path = require('path');
-    const filePath = path.join(__dirname, '..', 'uploads', car.photoUrl);
+    const fs = require('fs');
+
+    // Handle malformed photoUrl from seeds or old data (e.g. /uploads/filename.jpg)
+    let filename = car.photoUrl;
+    if (filename.startsWith('/uploads/')) {
+      filename = filename.replace('/uploads/', '');
+    }
+    // Remove any leading slashes
+    filename = filename.replace(/^\/+/, '');
+
+    const filePath = path.join(__dirname, '..', 'uploads', filename);
+
+    if (!fs.existsSync(filePath)) {
+      console.warn(`[PHOTO] File not found on disk: ${filePath}`);
+      return res.status(404).json({ message: 'Fichier image introuvable sur le serveur' });
+    }
+
     res.sendFile(filePath);
   } catch (err) { next(err); }
 };
