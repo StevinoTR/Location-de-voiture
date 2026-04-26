@@ -4,7 +4,7 @@ async function test() {
     const email = crypto.randomBytes(4).toString('hex') + '@test.com';
     
     // 1. Create a user
-    const regRes = await fetch('http://localhost:5000/api/register', {
+    const regRes = await fetch('https://fiarako.onrender.com/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -20,14 +20,14 @@ async function test() {
     console.log('Registered, got token.');
     
     // Get a car
-    const carsRes = await fetch('http://localhost:5000/api/voitures');
+    const carsRes = await fetch('https://fiarako.onrender.com/api/voitures');
     const cars = await carsRes.json();
     if(cars.length === 0) { console.log('No cars available to test'); return; }
     
     const carId = cars[0].id;
     
     // Create reservation
-    const createRes = await fetch('http://localhost:5000/api/reservations', {
+    const createRes = await fetch('https://fiarako.onrender.com/api/reservations', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ async function test() {
     console.log('Reservation created:', await createRes.json());
     
     // 2. Request client reservations
-    const getRes = await fetch('http://localhost:5000/api/client/reservations', {
+    const getRes = await fetch('https://fiarako.onrender.com/api/client/reservations', {
       headers: { Authorization: 'Bearer ' + token }
     });
     
