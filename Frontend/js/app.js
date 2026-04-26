@@ -1,5 +1,5 @@
 // API Base URL - Dynamically set to the current origin for flexibility
-const API_BASE = window.location.origin;
+const API_BASE = 'https://fiarako.onrender.com';
 
 let storedUser = null;
 try {
