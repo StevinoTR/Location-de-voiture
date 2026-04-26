@@ -10,7 +10,7 @@ const app = express();
 
 // 1. GLOBAL MIDDLEWARE
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: 'https://fiarako.onrender.com',
   credentials: true
 }));
 app.use(express.json());
