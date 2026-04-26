@@ -27,8 +27,8 @@ const sequelize = new Sequelize(
     // 🔐 Activation SSL
     dialectOptions: DB_SSL === 'true' ? {
       ssl: {
-        require: true,
-        rejectUnauthorized: true // ⚠️ mettre true en prod avec certificat valide
+        
+        rejectUnauthorized: true 
       }
     } : {},
 
