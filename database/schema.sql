@@ -1,72 +1,25 @@
--- CarRent MySQL schema
--- Run this in your MySQL client (e.g., mysql -u root -p < schema.sql)
+require('dotenv').config();
+const { Sequelize } = require('sequelize');
 
-CREATE DATABASE IF NOT EXISTS carrent;
-USE carrent;
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'mysql',
+  logging: false,
+  dialectOptions: {
+    ssl: {
+      minVersion: 'TLSv1.2',
+      rejectUnauthorized: true
+    }
+  },
+  pool: {
+    max:     5,
+    min:     0,
+    acquire: 60000,
+    idle:    10000,
+  }
+});
 
--- users
-CREATE TABLE IF NOT EXISTS users (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  prenom VARCHAR(100) NOT NULL,
-  nom VARCHAR(100) NOT NULL,
-  email VARCHAR(255) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,
-  role ENUM('admin','entreprise','client') NOT NULL DEFAULT 'client',
-  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+sequelize.authenticate()
+  .then(() => console.log('✅ TiDB connecté'))
+  .catch(err => console.error('❌ Erreur TiDB :', err.message));
 
--- entreprises (profil complémentaire pour les utilisateurs de type entreprise)
-CREATE TABLE IF NOT EXISTS entreprises (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  user_id INT UNSIGNED NOT NULL,
-  nom_entreprise VARCHAR(255) NOT NULL,
-  adresse VARCHAR(255) NOT NULL,
-  telephone VARCHAR(50),
-  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- clients (profil complémentaire pour les utilisateurs de type client)
-CREATE TABLE IF NOT EXISTS clients (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  user_id INT UNSIGNED NOT NULL,
-  telephone VARCHAR(50),
-  adresse VARCHAR(255),
-  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- voitures
-CREATE TABLE IF NOT EXISTS voitures (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  entrepriseId INT UNSIGNED NOT NULL,
-  marque VARCHAR(100) NOT NULL,
-  modele VARCHAR(100) NOT NULL,
-  annee SMALLINT UNSIGNED NOT NULL,
-  prix_jour INT UNSIGNED NOT NULL,
-  statut ENUM('disponible','louee','maintenance') NOT NULL DEFAULT 'disponible',
-  description TEXT,
-  photoUrl VARCHAR(255),
-  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (entrepriseId) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- reservations
-CREATE TABLE IF NOT EXISTS reservations (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  voitureId INT UNSIGNED NOT NULL,
-  clientId INT UNSIGNED NOT NULL,
-  date_debut DATE NOT NULL,
-  date_fin DATE NOT NULL,
-  statut ENUM('en_attente','confirmee','annulee','terminee') NOT NULL DEFAULT 'en_attente',
-  montant INT UNSIGNED,
-  reference VARCHAR(100) UNIQUE,
-  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (voitureId) REFERENCES voitures(id) ON DELETE CASCADE,
-  FOREIGN KEY (clientId) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+module.exports = sequelize;
