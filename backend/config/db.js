@@ -6,7 +6,8 @@ const {
   DB_USER,
   DB_PASSWORD,
   DB_HOST,
-  DB_PORT
+  DB_PORT,
+  DB_SSL
 } = process.env;
 
 if (!DB_NAME || !DB_USER) {
@@ -22,6 +23,15 @@ const sequelize = new Sequelize(
     port: DB_PORT ? parseInt(DB_PORT, 10) : 3306,
     dialect: 'mysql',
     logging: false,
+
+    // 🔐 Activation SSL
+    dialectOptions: DB_SSL === 'true' ? {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false // ⚠️ mettre true en prod avec certificat valide
+      }
+    } : {},
+
     pool: {
       max: 5,
       min: 0,
@@ -29,5 +39,20 @@ const sequelize = new Sequelize(
     }
   }
 );
+
+// ✅ Fonction de vérification de connexion
+async function testConnection() {
+  try {
+    await sequelize.authenticate();
+    console.log('✅ Database connected successfully.');
+    return true;
+  } catch (error) {
+    console.error('❌ Unable to connect to the database:', error.message);
+    return false;
+  }
+}
+
+// 🔁 Test automatique au démarrage
+testConnection();
 
 module.exports = sequelize;
