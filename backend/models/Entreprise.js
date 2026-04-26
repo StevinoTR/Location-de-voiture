@@ -1,27 +1,21 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const User = require('./User');
 
-const Entreprise = sequelize.define('Entreprise', {
+const User = sequelize.define('User', {
   id: {
-    type: DataTypes.INTEGER.UNSIGNED,
+    type: DataTypes.BIGINT.UNSIGNED,
     primaryKey: true,
     autoIncrement: true
   },
-  userId: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false,
-    field: 'user_id'
-  },
-  nom_entreprise: { type: DataTypes.STRING, allowNull: false },
-  adresse: { type: DataTypes.STRING, allowNull: false },
-  telephone: { type: DataTypes.STRING, allowNull: true }
+  prenom:   { type: DataTypes.STRING, allowNull: true },
+  nom:      { type: DataTypes.STRING, allowNull: true },
+  email:    { type: DataTypes.STRING, allowNull: false, unique: true },
+  password: { type: DataTypes.STRING, allowNull: false },
+  role:     { type: DataTypes.STRING, allowNull: false, defaultValue: 'client' },
+  blocked:  { type: DataTypes.TINYINT, allowNull: false, defaultValue: 0 }
 }, {
-  tableName: 'entreprises',
+  tableName:  'users',
   timestamps: true
 });
 
-Entreprise.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-User.hasOne(Entreprise, { foreignKey: 'userId', as: 'entreprise' });
-
-module.exports = Entreprise;
+module.exports = User;
