@@ -1,131 +1,119 @@
-const { validationResult } = require('express-validator');
-const { Op } = require('sequelize');
-const Car = require('../models/Car');
+const path = require('path');
+const fs   = require('fs');
+const Car  = require('../models/Car');
+const User = require('../models/User');
+const Entreprise = require('../models/Entreprise');
 
+// GET /api/voitures
 exports.list = async (req, res, next) => {
   try {
-    const { minPrix, maxPrix, statut, marque, modele } = req.query;
     const where = {};
-
-    if (minPrix) where.prix_jour = { ...(where.prix_jour || {}), [Op.gte]: Number(minPrix) };
-    if (maxPrix) where.prix_jour = { ...(where.prix_jour || {}), [Op.lte]: Number(maxPrix) };
-    if (statut) where.statut = statut;
-    if (marque) where.marque = { [Op.like]: `%${marque}%` };
-    if (modele) where.modele = { [Op.like]: `%${modele}%` };
-
-    // Filter by entreprise only in dashboard mode (no statut filter = private dashboard call)
-    // When statut=disponible is passed, it's the public catalogue — show all companies' cars
-    if (req.user && req.user.role === 'entreprise' && !statut) {
-      where.entrepriseId = req.user.id;
-    }
+    if (req.query.statut) where.statut = req.query.statut;
 
     const cars = await Car.findAll({
       where,
-      include: [
-        { association: 'entreprise', attributes: ['id', 'prenom', 'nom', 'email'] },
-        {
-          association: 'reservations',
-          required: false,
-          where: { statut: { [Op.notIn]: ['annulee', 'terminee'] } },
-          include: [{ association: 'client', attributes: ['id','prenom','nom','email'] }]
-        }
-      ]
+      include: [{
+        model:      User,
+        as:         'entreprise',
+        attributes: ['id', 'prenom', 'nom'],
+        include: [{
+          model:      Entreprise,
+          as:         'entreprise',
+          attributes: ['nom_entreprise', 'telephone']
+        }]
+      }],
+      order: [['createdAt', 'DESC']]
     });
-    res.json(cars);
+
+    return res.json(cars);
   } catch (err) { next(err); }
 };
 
+// GET /api/voitures/:id
 exports.get = async (req, res, next) => {
   try {
-    const car = await Car.findByPk(req.params.id);
-    if (!car) return res.status(404).json({ message: 'Voiture introuvable' });
-    res.json(car);
+    const car = await Car.findByPk(req.params.id, {
+      include: [{
+        model:      User,
+        as:         'entreprise',
+        attributes: ['id', 'prenom', 'nom'],
+        include: [{
+          model:      Entreprise,
+          as:         'entreprise',
+          attributes: ['nom_entreprise', 'telephone']
+        }]
+      }]
+    });
+
+    if (!car) return res.status(404).json({ message: 'Voiture introuvable.' });
+    return res.json(car);
   } catch (err) { next(err); }
 };
 
+// POST /api/voitures
 exports.create = async (req, res, next) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+    const { marque, modele, annee, prix_jour, statut, description } = req.body;
 
-    const { marque, modele, annee, prix_jour, statut, description, photoUrl } = req.body;
     const car = await Car.create({
+      entrepriseId: req.user.id,
       marque,
       modele,
-      annee,
+      annee:       annee       || 2020,
       prix_jour,
-      statut: statut || 'disponible',
-      description,
-      photoUrl,
-      entrepriseId: req.user.id
+      statut:      statut      || 'disponible',
+      description: description || null,
+      photoUrl:    null
     });
-    res.status(201).json(car);
+
+    return res.status(201).json(car);
   } catch (err) { next(err); }
 };
 
+// PUT /api/voitures/:id
 exports.update = async (req, res, next) => {
   try {
     const car = await Car.findByPk(req.params.id);
-    if (!car) return res.status(404).json({ message: 'Voiture introuvable' });
-    if (car.entrepriseId !== req.user.id)
-      return res.status(403).json({ message: 'Interdit' });
+    if (!car) return res.status(404).json({ message: 'Voiture introuvable.' });
+
+    if (req.user.role !== 'admin' && car.entrepriseId !== req.user.id) {
+      return res.status(403).json({ message: 'Accès refusé.' });
+    }
 
     await car.update(req.body);
-    res.json(car);
+    return res.json(car);
   } catch (err) { next(err); }
 };
 
+// DELETE /api/voitures/:id
 exports.remove = async (req, res, next) => {
   try {
     const car = await Car.findByPk(req.params.id);
-    if (!car) return res.status(404).json({ message: 'Voiture introuvable' });
-    if (car.entrepriseId !== req.user.id)
-      return res.status(403).json({ message: 'Interdit' });
+    if (!car) return res.status(404).json({ message: 'Voiture introuvable.' });
+
+    if (req.user.role !== 'admin' && car.entrepriseId !== req.user.id) {
+      return res.status(403).json({ message: 'Accès refusé.' });
+    }
+
     await car.destroy();
-    res.status(204).end();
+    return res.json({ message: 'Voiture supprimée.' });
   } catch (err) { next(err); }
 };
 
+// POST /api/voitures/:id/photo
 exports.uploadPhoto = async (req, res, next) => {
   try {
     const car = await Car.findByPk(req.params.id);
-    if (!car) return res.status(404).json({ message: 'Voiture introuvable' });
-    if (car.entrepriseId !== req.user.id)
-      return res.status(403).json({ message: 'Interdit' });
+    if (!car) return res.status(404).json({ message: 'Voiture introuvable.' });
 
-    if (!req.file) return res.status(400).json({ message: 'Aucune photo fournie' });
+    if (!req.file) return res.status(400).json({ message: 'Aucun fichier envoyé.' });
 
-    // store filename for serving
-    car.photoUrl = req.file.filename;
-    await car.save();
+    const ext      = path.extname(req.file.originalname).toLowerCase();
+    const filename = `car_${car.id}_${Date.now()}${ext}`;
+    const dest     = path.join(__dirname, '../uploads', filename);
+    fs.renameSync(req.file.path, dest);
 
-    res.json({ message: 'Photo uploadée', photoUrl: `/voitures/${car.id}/photo` });
-  } catch (err) { next(err); }
-};
-
-exports.getPhoto = async (req, res, next) => {
-  try {
-    const car = await Car.findByPk(req.params.id);
-    if (!car || !car.photoUrl) return res.status(404).json({ message: 'Photo introuvable' });
-
-    const path = require('path');
-    const fs = require('fs');
-
-    // Handle malformed photoUrl from seeds or old data (e.g. /uploads/filename.jpg)
-    let filename = car.photoUrl;
-    if (filename.startsWith('/uploads/')) {
-      filename = filename.replace('/uploads/', '');
-    }
-    // Remove any leading slashes
-    filename = filename.replace(/^\/+/, '');
-
-    const filePath = path.join(__dirname, '..', 'uploads', filename);
-
-    if (!fs.existsSync(filePath)) {
-      console.warn(`[PHOTO] File not found on disk: ${filePath}`);
-      return res.status(404).json({ message: 'Fichier image introuvable sur le serveur' });
-    }
-
-    res.sendFile(filePath);
+    await car.update({ photoUrl: `/uploads/${filename}` });
+    return res.json({ photoUrl: `/uploads/${filename}` });
   } catch (err) { next(err); }
 };

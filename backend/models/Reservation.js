@@ -16,21 +16,21 @@ const Reservation = sequelize.define('Reservation', {
   },
   clientId: {
     type:      DataTypes.BIGINT.UNSIGNED,
-    allowNull: false,
+    allowNull: true,
     field:     'client_id'
   },
-  date_debut: { type: DataTypes.DATEONLY, allowNull: false },
-  date_fin:   { type: DataTypes.DATEONLY, allowNull: false },
-  statut:     { type: DataTypes.STRING,   allowNull: false, defaultValue: 'en_attente' },
-  montant:    { type: DataTypes.INTEGER,  allowNull: true  },
-  reference:  { type: DataTypes.STRING,   unique: true     },
-  nb_jours:   { type: DataTypes.INTEGER,  allowNull: true  },
-  nom_client:   { type: DataTypes.STRING, allowNull: true  },
-  email_client: { type: DataTypes.STRING, allowNull: true  },
-  tel_client:   { type: DataTypes.STRING, allowNull: true  },
-  cin_client:   { type: DataTypes.STRING, allowNull: true  },
-  lieu:         { type: DataTypes.STRING, allowNull: true  },
-  message:      { type: DataTypes.TEXT,   allowNull: true  }
+  reference:    { type: DataTypes.STRING,  unique: true,   allowNull: true },
+  date_debut:   { type: DataTypes.DATEONLY, allowNull: false },
+  date_fin:     { type: DataTypes.DATEONLY, allowNull: false },
+  statut:       { type: DataTypes.STRING,  allowNull: false, defaultValue: 'en_attente' },
+  montant:      { type: DataTypes.INTEGER, allowNull: true },
+  nb_jours:     { type: DataTypes.INTEGER, allowNull: true },
+  nom_client:   { type: DataTypes.STRING,  allowNull: true },
+  email_client: { type: DataTypes.STRING,  allowNull: true },
+  tel_client:   { type: DataTypes.STRING,  allowNull: true },
+  cin_client:   { type: DataTypes.STRING,  allowNull: true },
+  lieu:         { type: DataTypes.STRING,  allowNull: true },
+  message:      { type: DataTypes.TEXT,    allowNull: true }
 }, {
   tableName:  'reservations',
   timestamps: true
@@ -38,7 +38,7 @@ const Reservation = sequelize.define('Reservation', {
 
 Reservation.belongsTo(User, {
   as:         'client',
-  foreignKey: { name: 'clientId',  field: 'client_id'  }
+  foreignKey: { name: 'clientId', field: 'client_id' }
 });
 Reservation.belongsTo(Car, {
   as:         'voiture',
@@ -50,7 +50,7 @@ Car.hasMany(Reservation, {
 });
 User.hasMany(Reservation, {
   as:         'reservations',
-  foreignKey: { name: 'clientId',  field: 'client_id'  }
+  foreignKey: { name: 'clientId', field: 'client_id' }
 });
 
 module.exports = Reservation;

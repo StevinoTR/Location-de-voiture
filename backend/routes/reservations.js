@@ -1,24 +1,16 @@
 const express = require('express');
-const { body } = require('express-validator');
 const resaCtrl = require('../controllers/reservationController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../middleware/authMiddleware');
+
 const router = express.Router();
 
-router.get('/', protect, resaCtrl.list);
-router.get('/mes-reservations', protect, resaCtrl.myReservations);
-
-router.post(
-  '/',
-  protect,
-  [
-    body('voitureId').isInt({ gt: 0 }),
-    body('date_debut').isISO8601(),
-    body('date_fin').isISO8601()
-  ],
-  resaCtrl.create
-);
-
-router.put('/:id', protect, resaCtrl.update);
-router.delete('/:id', protect, resaCtrl.remove);
+router.post('/',              resaCtrl.create);
+router.get('/',   protect, authorize('entreprise','admin'), resaCtrl.list);
+router.get('/mes-reservations', protect, resaCtrl.mesReservations);
+router.put('/:id',            protect, resaCtrl.update);
+router.put('/:id/confirm',    protect, authorize('entreprise','admin'), resaCtrl.confirm);
+router.put('/:id/refuse',     protect, authorize('entreprise','admin'), resaCtrl.refuse);
+router.put('/:id/terminate',  protect, authorize('entreprise','admin'), resaCtrl.terminate);
+router.put('/:id/cancel',     protect, resaCtrl.cancel);
 
 module.exports = router;

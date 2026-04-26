@@ -9,9 +9,9 @@ const Client = sequelize.define('Client', {
     autoIncrement: true
   },
   userId: {
-    type: DataTypes.BIGINT.UNSIGNED,
+    type:      DataTypes.BIGINT.UNSIGNED,
     allowNull: false,
-    field: 'user_id'
+    field:     'user_id'
   },
   telephone: { type: DataTypes.STRING, allowNull: true },
   adresse:   { type: DataTypes.STRING, allowNull: true }
@@ -20,7 +20,7 @@ const Client = sequelize.define('Client', {
   timestamps: true
 });
 
-Client.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-User.hasOne(Client,    { foreignKey: 'userId', as: 'client' });
+Client.belongsTo(User, { foreignKey: { name: 'userId', field: 'user_id' }, as: 'user' });
+User.hasOne(Client,    { foreignKey: { name: 'userId', field: 'user_id' }, as: 'client' });
 
 module.exports = Client;

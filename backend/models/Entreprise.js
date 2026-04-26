@@ -9,9 +9,9 @@ const Entreprise = sequelize.define('Entreprise', {
     autoIncrement: true
   },
   userId: {
-    type: DataTypes.BIGINT.UNSIGNED,
+    type:      DataTypes.BIGINT.UNSIGNED,
     allowNull: false,
-    field: 'user_id'
+    field:     'user_id'
   },
   nom_entreprise: { type: DataTypes.STRING, allowNull: false },
   adresse:        { type: DataTypes.STRING, allowNull: true },
@@ -21,7 +21,7 @@ const Entreprise = sequelize.define('Entreprise', {
   timestamps: true
 });
 
-Entreprise.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-User.hasOne(Entreprise,    { foreignKey: 'userId', as: 'entreprise' });
+Entreprise.belongsTo(User, { foreignKey: { name: 'userId', field: 'user_id' }, as: 'user' });
+User.hasOne(Entreprise,    { foreignKey: { name: 'userId', field: 'user_id' }, as: 'entreprise' });
 
 module.exports = Entreprise;

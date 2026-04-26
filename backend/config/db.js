@@ -1,40 +1,25 @@
 require('dotenv').config();
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 4000,
-    dialect: 'mysql',
-    logging: false,
-
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    },
-
-    pool: {
-      max: 5,
-      min: 0,
-      idle: 10000
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'mysql',
+  logging: false,
+  dialectOptions: {
+    ssl: {
+      minVersion: 'TLSv1.2',
+      rejectUnauthorized: true
     }
+  },
+  pool: {
+    max:     5,
+    min:     0,
+    acquire: 60000,
+    idle:    10000,
   }
-);
+});
 
-// 🔐 Test connexion
-(async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('✅ Connexion DB OK');
-  } catch (error) {
-    console.error('❌ DB error:', error.message);
-    process.exit(1);
-  }
-})();
+sequelize.authenticate()
+  .then(() => console.log('✅ Connexion DB OK'))
+  .catch(err => console.error('❌ DB error:', err.message));
 
 module.exports = sequelize;

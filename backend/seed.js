@@ -1,27 +1,40 @@
-const bcrypt = require('bcryptjs');
-const { Op } = require('sequelize');
+require('dotenv').config();
+const bcrypt    = require('bcryptjs');
 const sequelize = require('./config/db');
-const User = require('./models/User');
-const Car = require('./models/Car');
-const Reservation = require('./models/Reservation');
-const Entreprise = require('./models/Entreprise');
-const Client = require('./models/Client');
+const User      = require('./models/User');
 
-async function clearData() {
+async function seed() {
   try {
     await sequelize.authenticate();
-    console.log('Connected to database');
+    console.log('✅ Connexion BDD OK');
 
-    // Delete all reservations and cars
-    await Reservation.destroy({ where: {} });
-    await Car.destroy({ where: {} });
-    console.log('All reservations and cars deleted');
+    const email    = process.env.ADMIN_EMAIL    || 'admin@carrent.mg';
+    const password = process.env.ADMIN_PASSWORD || 'Admin2026!';
 
+    const existing = await User.findOne({ where: { email } });
+    if (existing) {
+      console.log('ℹ️  Admin existe déjà :', email);
+      process.exit(0);
+    }
+
+    const hash = await bcrypt.hash(password, 12);
+    await User.create({
+      prenom:   'Super',
+      nom:      'Admin',
+      email,
+      password: hash,
+      role:     'admin',
+      blocked:  0
+    });
+
+    console.log('✅ Compte admin créé !');
+    console.log('   Email    :', email);
+    console.log('   Password :', password);
     process.exit(0);
   } catch (err) {
-    console.error('Error clearing data:', err);
+    console.error('❌ Erreur :', err.message);
     process.exit(1);
   }
 }
 
-clearData();
+seed();

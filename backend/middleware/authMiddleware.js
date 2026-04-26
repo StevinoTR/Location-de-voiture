@@ -1,64 +1,35 @@
-const jwt = require('jsonwebtoken');
+const jwt  = require('jsonwebtoken');
 const User = require('../models/User');
-require('dotenv').config();
 
-exports.protect = async (req, res, next) => {
+const protect = async (req, res, next) => {
   try {
-    let token = null;
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer ')
-    ) {
-      token = req.headers.authorization.split(' ')[1];
+    const header = req.headers.authorization;
+    if (!header || !header.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Token manquant.' });
     }
-    if (!token) return res.status(401).json({ message: 'Non autorisé' });
 
+    const token   = header.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
     const user = await User.findByPk(decoded.id);
-    if (!user) return res.status(401).json({ message: 'Utilisateur introuvable' });
+    if (!user) return res.status(401).json({ message: 'Utilisateur introuvable.' });
+    if (user.blocked) return res.status(403).json({ message: 'Compte bloqué.' });
 
-    if (user.blocked) {
-      return res.status(403).json({ message: "Votre compte a été bloqué. Contactez l'administrateur." });
-    }
-
-    req.user = user; // objet Sequelize
+    req.user = user;
     next();
   } catch (err) {
-    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
-      return res.status(401).json({ message: 'Token invalide ou expiré' });
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Session expirée.' });
     }
-    next(err);
+    return res.status(401).json({ message: 'Token invalide.' });
   }
 };
 
-exports.authorize = (...roles) => {
-  return (req, res, next) => {
-    if (!req.user || !roles.includes(req.user.role)) {
-      return res.status(403).json({ message: 'Accès refusé' });
-    }
-    next();
-  };
+const authorize = (...roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    return res.status(403).json({ message: 'Accès refusé.' });
+  }
+  next();
 };
 
-exports.softProtect = async (req, res, next) => {
-  try {
-    let token = null;
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer ')
-    ) {
-      token = req.headers.authorization.split(' ')[1];
-    }
-    if (token) {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findByPk(decoded.id);
-      if (user && !user.blocked) {
-        req.user = user;
-      }
-    }
-    next();
-  } catch (err) {
-    // Ignore token errors, just continue without user
-    next();
-  }
-};
+module.exports = { protect, authorize };

@@ -8,18 +8,18 @@ const Car = sequelize.define('Car', {
     primaryKey: true,
     autoIncrement: true
   },
-  marque:      { type: DataTypes.STRING,        allowNull: false },
-  modele:      { type: DataTypes.STRING,        allowNull: false },
-  annee:       { type: DataTypes.INTEGER,       allowNull: true  },
-  prix_jour:   { type: DataTypes.INTEGER,       allowNull: false },
-  statut:      { type: DataTypes.STRING,        allowNull: false, defaultValue: 'disponible' },
-  description: { type: DataTypes.TEXT,          allowNull: true  },
-  photoUrl:    { type: DataTypes.STRING,        allowNull: true  },
   entrepriseId: {
     type:      DataTypes.BIGINT.UNSIGNED,
     allowNull: false,
-    field:     'entreprise_id'    // ← mappe vers la colonne en BDD
-  }
+    field:     'entreprise_id'
+  },
+  marque:      { type: DataTypes.STRING,  allowNull: false },
+  modele:      { type: DataTypes.STRING,  allowNull: false },
+  annee:       { type: DataTypes.INTEGER, allowNull: true, defaultValue: 2020 },
+  prix_jour:   { type: DataTypes.INTEGER, allowNull: false },
+  statut:      { type: DataTypes.STRING,  allowNull: false, defaultValue: 'disponible' },
+  description: { type: DataTypes.TEXT,   allowNull: true },
+  photoUrl:    { type: DataTypes.STRING,  allowNull: true }
 }, {
   tableName:  'voitures',
   timestamps: true
@@ -29,7 +29,6 @@ Car.belongsTo(User, {
   as:         'entreprise',
   foreignKey: { name: 'entrepriseId', field: 'entreprise_id', allowNull: false }
 });
-
 User.hasMany(Car, {
   as:         'voitures',
   foreignKey: { name: 'entrepriseId', field: 'entreprise_id', allowNull: false }
