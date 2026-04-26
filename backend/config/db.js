@@ -6,31 +6,27 @@ const {
   DB_USER,
   DB_PASSWORD,
   DB_HOST,
-  DB_PORT,
-  DB_SSL
+  DB_PORT
 } = process.env;
-
-if (!DB_NAME || !DB_USER) {
-  console.warn('Missing required database environment variables (DB_NAME/DB_USER).');
-}
 
 const sequelize = new Sequelize(
   DB_NAME,
   DB_USER,
   DB_PASSWORD,
   {
-    host: DB_HOST || 'localhost',
-    port: DB_PORT ? parseInt(DB_PORT, 10) : 3306,
+    host: DB_HOST,
+    port: DB_PORT ? parseInt(DB_PORT, 10) : 4000, // ⚠️ important
     dialect: 'mysql',
     logging: false,
 
-    // 🔐 Activation SSL
-    dialectOptions: DB_SSL === 'true' ? {
+    // 🔐 AJOUT IMPORTANT (SSL)
+    dialectOptions: {
       ssl: {
-        
-        rejectUnauthorized: true 
+        require: true,
+        minVersion: 'TLSv1.2',
+        rejectUnauthorized: true
       }
-    } : {},
+    },
 
     pool: {
       max: 5,
@@ -40,19 +36,15 @@ const sequelize = new Sequelize(
   }
 );
 
-// ✅ Fonction de vérification de connexion
-async function testConnection() {
+// ✅ TEST + BLOQUER SI ECHEC
+(async () => {
   try {
     await sequelize.authenticate();
-    console.log('✅ Database connected successfully.');
-    return true;
+    console.log('✅ Connexion DB sécurisée réussie');
   } catch (error) {
-    console.error('❌ Unable to connect to the database:', error.message);
-    return false;
+    console.error('❌ Impossible de se connecter à la base de données :', error.message);
+    process.exit(1); // 🔴 IMPORTANT
   }
-}
-
-// 🔁 Test automatique au démarrage
-testConnection();
+})();
 
 module.exports = sequelize;
