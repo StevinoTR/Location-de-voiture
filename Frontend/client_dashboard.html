@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon Tableau de bord — CarRent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --blue    : #0f2d6e;
+      --blue-mid: #1a4098;
+      --blue-lt : #eef3ff;
+      --orange  : #f5620f;
+      --dark    : #0d1b2a;
+      --g600    : #4a5568;
+      --g500    : #64748b;
+      --g400    : #94a3b8;
+      --g200    : #e2e8f0;
+      --g100    : #f1f5f9;
+      --g50     : #f8fafc;
+      --white   : #ffffff;
+      --green   : #16a34a;
+      --green-lt: #dcfce7;
+      --red     : #dc2626;
+      --red-lt  : #fee2e2;
+      --orange-lt: #ffedd5;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html  { scroll-behavior:smooth; }
+    body  { font-family:'DM Sans', sans-serif; background:var(--g50); color:var(--dark); }
+    a     { text-decoration:none; color:inherit; }
+    ul    { list-style:none; }
+
+    .container { max-width:1200px; margin:0 auto; padding:0 2rem; }
+
+    /* NAVBAR */
+    .navbar {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      background: rgba(255,255,255,.97);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--g200);
+      box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    }
+    .nav-inner { height: 70px; display: flex; align-items:center; justify-content:space-between; }
+    .logo { display:flex; align-items:center; gap:.55rem; }
+    .logo-box { width:38px; height:38px; background:var(--blue); border-radius:10px; display:flex; align-items:center; justify-content:center; }
+    .logo-box svg { width:22px; height:22px; }
+    .logo-name { font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:800; color:var(--dark); }
+    .logo-name span { color:var(--orange); }
+    .nav-links { display:flex; align-items:center; gap:.2rem; }
+    .nav-links a { font-size:.9rem; font-weight:500; color:var(--g500); padding:.45rem 1rem; border-radius:8px; transition:all .2s; }
+    .nav-links a:hover, .nav-links a.active { color:var(--blue); background:var(--blue-lt); }
+    .nav-actions { display:flex; align-items:center; gap:.75rem; }
+    .btn-ghost { font-size:.88rem; font-weight:600; color:var(--red); background:transparent; border:1.5px solid var(--red); padding:.5rem 1.2rem; border-radius:9px; transition:all .2s; cursor:pointer;}
+    .btn-ghost:hover { background:var(--red-lt); }
+
+    /* HEADER */
+    .page-hero {
+      padding-top: 70px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 100%);
+      padding-bottom: 3rem;
+    }
+    .page-hero-inner {
+      padding: 3.5rem 0 1rem;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+    .page-hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem,4vw,2.8rem);
+      font-weight: 800; color: white;
+      letter-spacing: -.02em; line-height: 1.15;
+      margin-bottom: .6rem;
+    }
+    .page-hero h1 em { font-style:normal; color: var(--orange); }
+    .page-hero p { font-size: .95rem; color: rgba(255,255,255,.65); }
+
+    /* MAIN CONTENT */
+    .dashboard-section { padding: 3rem 0; min-height: 60vh; }
+    
+    .reservations-container {
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      overflow: hidden;
+      border: 1px solid var(--g200);
+    }
+    
+    .table-header {
+      background: var(--g100);
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--g200);
+    }
+    .table-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      color: var(--dark);
+    }
+
+    .table-responsive { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th {
+      background: white;
+      padding: 1rem 2rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--g500);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--g200);
+    }
+    td {
+      padding: 1.2rem 2rem;
+      font-size: 0.95rem;
+      color: var(--dark);
+      border-bottom: 1px solid var(--g200);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--g50); }
+
+    .car-info { display: flex; align-items: center; gap: 1rem; }
+    .car-img { width: 60px; height: 40px; border-radius: 6px; object-fit: cover; background: var(--blue-lt); }
+    .car-details h4 { font-family: 'Syne', sans-serif; font-size: 1rem; margin-bottom: 0.2rem; color: var(--dark); }
+    .car-details span { font-size: 0.8rem; color: var(--g500); text-transform: uppercase; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .status-confirmee { background: var(--green-lt); color: var(--green); }
+    .status-en_attente { background: var(--orange-lt); color: var(--orange); }
+    .status-annulee { background: var(--red-lt); color: var(--red); }
+    .status-terminee { background: var(--g200); color: var(--g600); }
+
+    .empty-state { text-align: center; padding: 4rem 2rem; color: var(--g500); }
+    .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--dark); }
+    
+    /* FOOTER */
+    footer { background: var(--dark); padding: 3rem 0; text-align: center; }
+    .footer-logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; margin-bottom: .5rem; }
+    .footer-logo span { color: var(--orange); }
+    footer p { font-size: .82rem; color: rgba(255,255,255,.35); }
+
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="index.html" class="logo">
+          <div class="logo-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="3" width="15" height="13" rx="2"/>
+              <path d="M16 8h4l3 3v5h-7V8z"/>
+              <circle cx="5.5"  cy="18.5" r="2.5"/>
+              <circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+          </div>
+          <span class="logo-name">Car<span>Rent</span></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="index.html">Accueil</a></li>
+          <li><a href="voitures.html">Voitures</a></li>
+          <li><a href="client_dashboard.html" class="active">Mes Réservations</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <button onclick="logout()" class="btn-ghost">Déconnexion</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="page-hero">
+    <div class="container">
+      <div class="page-hero-inner">
+        <div>
+          <h1 id="welcomeText">Bonjour, <em>Client</em></h1>
+          <p>Voici l'historique et l'état de vos réservations actuelles.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <section class="dashboard-section">
+    <div class="container">
+      <div class="reservations-container">
+        <div class="table-header">
+          <h2>Mes Réservations</h2>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Référence</th>
+                <th>Voiture</th>
+                <th>Dates</th>
+                <th>Montant</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody id="resaBody">
+              <!-- JS injection -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-logo">Car<span>Rent</span></div>
+      <p>© 2026 CarRent Madagascar — Tous droits réservés</p>
+    </div>
+  </footer>
+
+  <script>
+    const token = localStorage.getItem('carrent_token');
+    if (!token) {
+      window.location.href = 'connexion.html';
+    }
+    
+    // Attempt to decode user info for welcome text if available
+    try {
+      const userStr = localStorage.getItem('carrent_user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        if (user.role !== 'client') {
+          window.location.href = 'connexion.html';
+        }
+        document.getElementById('welcomeText').innerHTML = `Bonjour, <em>${user.prenom || 'Client'}</em>`;
+      }
+    } catch (e) {}
+
+    function logout() {
+      localStorage.removeItem('carrent_token');
+      localStorage.removeItem('carrent_user');
+      window.location.href = 'index.html';
+    }
+
+    const formatDate = (dateString) => {
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('fr-FR', options);
+    };
+
+    const formatPrice = (price) => {
+      return new Intl.NumberFormat('fr-FR').format(price) + ' Ar';
+    };
+
+    const fetchReservations = async () => {
+      try {
+        const res = await fetch('/api/client/reservations', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.status === 401 || res.status === 403) {
+          logout();
+          return;
+        }
+        const data = await res.json();
+        renderReservations(data);
+      } catch (err) {
+        console.error('Error fetching reservations:', err);
+      }
+    };
+
+    const renderReservations = (reservations) => {
+      const tbody = document.getElementById('resaBody');
+      if (!reservations || reservations.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <h3>Aucune réservation</h3>
+                <p>Vous n'avez pas encore effectué de réservation.</p>
+                <br>
+                <a href="voitures.html" class="btn-ghost" style="display:inline-block; margin-top:1rem; border-color:var(--blue); color:var(--blue);">Voir les voitures</a>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = reservations.map(r => {
+        const voiture = r.voiture || {};
+        return `
+          <tr>
+            <td><strong>${r.reference || '#'+r.id}</strong></td>
+            <td>
+              <div class="car-info">
+                <img class="car-img" src="/api/voitures/${voiture.id}/photo" alt="Voiture" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2240%22%3E%3Crect width=%2260%22 height=%2240%22 fill=%22%23eef3ff%22/%3E%3C/svg%3E'">
+                <div class="car-details">
+                  <h4>${voiture.modele || 'Inconnu'}</h4>
+                  <span>${voiture.marque || ''}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              Du ${formatDate(r.date_debut)}<br>
+              Au ${formatDate(r.date_fin)}
+            </td>
+            <td><strong>${formatPrice(r.montant)}</strong></td>
+            <td>
+              <span class="status-badge status-${r.statut}">
+                ${r.statut.replace('_', ' ')}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    };
+
+    fetchReservations();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tableau de bord — CarRent Entreprise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+
+    /* ══════════════════════════════════════════
+       VARIABLES
+    ══════════════════════════════════════════ */
+    :root {
+      --blue      : #0f2d6e;
+      --blue-mid  : #1a4098;
+      --blue-lt   : #eef3ff;
+      --blue-pale : #f5f8ff;
+      --orange    : #f5620f;
+      --orange-lt : #fff3ed;
+      --dark      : #0d1b2a;
+      --sidebar-bg: #0d1f3c;
+      --g700      : #334155;
+      --g600      : #4a5568;
+      --g500      : #64748b;
+      --g400      : #94a3b8;
+      --g200      : #e2e8f0;
+      --g100      : #f1f5f9;
+      --g50       : #f8fafc;
+      --white     : #ffffff;
+      --green     : #16a34a;
+      --green-lt  : #dcfce7;
+      --red       : #dc2626;
+      --red-lt    : #fee2e2;
+      --yellow    : #d97706;
+      --yellow-lt : #fef3c7;
+    }
+
+    /* ══════════════════════════════════════════
+       RESET
+    ══════════════════════════════════════════ */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:'DM Sans', sans-serif; background:var(--g50); color:var(--dark); display:flex; min-height:100vh; }
+    a    { text-decoration:none; color:inherit; }
+    ul   { list-style:none; }
+    img  { display:block; max-width:100%; }
+    button { font-family:'DM Sans', sans-serif; cursor:pointer; }
+
+    .action-row { margin-top: 0.6rem; display: flex; gap: 0.4rem; }
+    .action-row .ab { font-size: 0.78rem; padding: 0.35rem 0.55rem; border: 1px solid #d1d5db; border-radius: 7px; background: #f8fafc; }
+    .action-row .ab.success { background:#dcfce7; border-color:#86efac; color:#166534; }
+    .action-row .ab.danger { background:#fee2e2; border-color:#fecaca; color:#b91c1c; }
+
+
+    /* ══════════════════════════════════════════
+       SIDEBAR
+    ══════════════════════════════════════════ */
+    .sidebar {
+      width: 255px;
+      flex-shrink: 0;
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      overflow-y: auto;
+      z-index: 100;
+      transition: transform .3s;
+    }
+
+    /* Logo */
+    .sb-logo {
+      padding: 1.6rem 1.5rem 1.2rem;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      display: flex; align-items: center; gap: .65rem;
+    }
+
+    .sb-logo-box {
+      width: 36px; height: 36px;
+      background: var(--orange);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sb-logo-box svg { width: 20px; height: 20px; }
+
+    .sb-logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem; font-weight: 800;
+      color: var(--white);
+    }
+
+    .sb-logo-text span { color: var(--orange); }
+    .sb-logo-sub { font-size: .65rem; color: rgba(255,255,255,.3); margin-top: .1rem; }
+
+    /* Profil entreprise */
+    .sb-profile {
+      margin: 1rem 1rem .5rem;
+      padding: .85rem 1rem;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      display: flex; align-items: center; gap: .75rem;
+    }
+
+    .sb-avatar {
+      width: 38px; height: 38px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--orange), #ff8c42);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: .9rem; font-weight: 800; color: white;
+    }
+
+    .sb-profile-name  { font-size: .85rem; font-weight: 600; color: white; line-height: 1; }
+    .sb-profile-badge {
+      display: inline-flex; align-items: center; gap: .3rem;
+      font-size: .65rem; color: #86efac; margin-top: .25rem;
+    }
+
+    .sb-profile-badge::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: #22c55e; border-radius: 50%;
+    }
+
+    /* Navigation */
+    .sb-nav { padding: .75rem 0; flex: 1; }
+
+    .sb-section-label {
+      padding: .6rem 1.5rem .3rem;
+      font-size: .6rem; font-weight: 700;
+      color: rgba(255,255,255,.25);
+      text-transform: uppercase; letter-spacing: .12em;
+    }
+
+    .sb-nav a {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .65rem 1.5rem;
+      font-size: .875rem; font-weight: 500;
+      color: rgba(255,255,255,.45);
+      border-right: 3px solid transparent;
+      transition: all .2s;
+      position: relative;
+    }
+
+    .sb-nav a .nav-ico {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+      transition: background .2s;
+    }
+
+    .sb-nav a:hover { color: rgba(255,255,255,.8); }
+    .sb-nav a:hover .nav-ico { background: rgba(255,255,255,.07); }
+
+    .sb-nav a.active {
+      color: white;
+      border-right-color: var(--orange);
+      background: rgba(255,255,255,.06);
+    }
+
+    .sb-nav a.active .nav-ico { background: rgba(245,98,15,.2); }
+
+    /* Badge compteur dans le menu */
+    .nav-badge {
+      margin-left: auto;
+      background: var(--orange);
+      color: white;
+      font-size: .6rem; font-weight: 700;
+      padding: .15rem .45rem; border-radius: 100px;
+      min-width: 18px; text-align: center;
+    }
+
+    /* Pied sidebar */
+    .sb-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(255,255,255,.07);
+      display: flex; flex-direction: column; gap: .5rem;
+    }
+
+    .sb-footer a {
+      display: flex; align-items: center; gap: .6rem;
+      font-size: .8rem; color: rgba(255,255,255,.3);
+      transition: color .2s;
+    }
+
+    .sb-footer a:hover { color: rgba(255,255,255,.7); }
+
+
+    /* ══════════════════════════════════════════
+       CONTENU PRINCIPAL
+    ══════════════════════════════════════════ */
+    .main {
+      margin-left: 255px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      background: white;
+      border-bottom: 1px solid var(--g200);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+      box-shadow: 0 1px 6px rgba(0,0,0,.05);
+    }
+
+    .topbar-left h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem; font-weight: 800;
+      color: var(--dark);
+    }
+
+    .topbar-left p { font-size: .8rem; color: var(--g400); margin-top: .1rem; }
+
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+
+    /* Bouton ajouter voiture */
+    .btn-add {
+      display: flex; align-items: center; gap: .5rem;
+      background: var(--blue); color: white;
+      font-size: .85rem; font-weight: 600;
+      padding: .55rem 1.2rem; border-radius: 10px; border: none;
+      box-shadow: 0 4px 12px rgba(15,45,110,.25);
+      transition: all .2s;
+    }
+
+    .btn-add:hover { background: var(--blue-mid); transform: translateY(-1px); }
+
+    /* Cloche notification */
+    .notif-btn {
+      width: 36px; height: 36px;
+      background: var(--g100); border: none;
+      border-radius: 9px; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; transition: background .2s;
+    }
+
+    .notif-btn:hover { background: var(--g200); }
+
+    .notif-dot {
+      position: absolute; top: 5px; right: 5px;
+      width: 7px; height: 7px;
+      background: var(--orange); border-radius: 50%;
+      border: 1.5px solid white;
+    }
+
+    /* Avatar utilisateur */
+    .user-chip {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .35rem .6rem .35rem .35rem;
+      background: var(--g100); border-radius: 100px;
+      cursor: pointer; transition: background .2s;
+    }
+
+    .user-chip:hover { background: var(--g200); }
+
+    .user-ava {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--orange), #ff8c42);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 800; color: white;
+    }
+
+    .user-name { font-size: .82rem; font-weight: 600; color: var(--dark); }
+
+    /* ── Contenu ── */
+    .content { padding: 2rem; flex: 1; }
+
+
+    /* ══════════════════════════════════════════
+       CARTES STATISTIQUES
+    ══════════════════════════════════════════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1.5px solid var(--g200);
+      border-radius: 16px;
+      padding: 1.4rem 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+      position: relative; overflow: hidden;
+      transition: all .25s;
+    }
+
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+
+    /* Cercle décoratif en fond */
+    .stat-card::after {
+      content: '';
+      position: absolute; top: -20px; right: -20px;
+      width: 80px; height: 80px; border-radius: 50%;
+      opacity: .06;
+    }
+
+    .stat-card.blue::after  { background: var(--blue); }
+    .stat-card.orange::after{ background: var(--orange); }
+    .stat-card.green::after { background: var(--green); }
+    .stat-card.red::after   { background: var(--red); }
+
+    .stat-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .stat-ico {
+      width: 42px; height: 42px;
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .stat-ico.blue   { background: var(--blue-lt); }
+    .stat-ico.orange { background: var(--orange-lt); }
+    .stat-ico.green  { background: var(--green-lt); }
+    .stat-ico.red    { background: var(--red-lt); }
+
+    .stat-trend {
+      font-size: .72rem; font-weight: 600;
+      padding: .2rem .5rem; border-radius: 100px;
+    }
+
+    .stat-trend.up   { background: var(--green-lt); color: var(--green); }
+    .stat-trend.down { background: var(--red-lt);   color: var(--red); }
+
+    .stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.9rem; font-weight: 800;
+      color: var(--dark); line-height: 1;
+      margin-bottom: .3rem;
+    }
+
+    .stat-lbl { font-size: .78rem; color: var(--g500); font-weight: 500; }
+
+
+    /* ══════════════════════════════════════════
+       GRILLE PRINCIPALE (voitures + réservations)
+    ══════════════════════════════════════════ */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    /* ── Bloc générique ── */
+    .block {
+      background: white;
+      border: 1.5px solid var(--g200);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    }
+
+    .block-head {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid var(--g100);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .block-title {
+      font-family: 'Syne', sans-serif;
+      font-size: .95rem; font-weight: 700;
+      color: var(--dark);
+    }
+
+    .block-sub { font-size: .75rem; color: var(--g400); margin-top: .1rem; }
+
+    .btn-see-all {
+      font-size: .78rem; font-weight: 600;
+      color: var(--blue); background: var(--blue-lt);
+      border: none; padding: .35rem .8rem; border-radius: 7px;
+      transition: all .2s;
+    }
+
+    .btn-see-all:hover { background: #dce8ff; }
+
+
+    /* ══════════════════════════════════════════
+       LISTE VOITURES
+    ══════════════════════════════════════════ */
+    .car-list { padding: .5rem 0; }
+
+    .car-row {
+      display: flex; align-items: center; gap: 1rem;
+      padding: .85rem 1.5rem;
+      border-bottom: 1px solid var(--g100);
+      transition: background .15s;
+    }
+
+    .car-row:last-child { border-bottom: none; }
+    .car-row:hover { background: var(--g50); }
+
+    /* Miniature voiture */
+    .car-thumb {
+      width: 72px; height: 48px; flex-shrink: 0;
+      border-radius: 9px; overflow: hidden;
+      background: linear-gradient(145deg, var(--blue-lt), #dce8ff);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      border: 1px solid var(--g200);
+    }
+
+    .car-thumb img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+
+    /* Infos */
+    .car-info { flex: 1; min-width: 0; }
+
+    .car-name {
+      font-family: 'Syne', sans-serif;
+      font-size: .88rem; font-weight: 700;
+      color: var(--dark);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .car-meta { font-size: .72rem; color: var(--g400); margin-top: .15rem; }
+
+    /* Prix */
+    .car-price {
+      font-family: 'Syne', sans-serif;
+      font-size: .9rem; font-weight: 700;
+      color: var(--blue); white-space: nowrap;
+    }
+
+    .car-price small { font-family:'DM Sans',sans-serif; font-size:.6rem; color:var(--g400); font-weight:400; }
+
+    /* Badge statut */
+    .badge {
+      padding: .2rem .6rem; border-radius: 100px;
+      font-size: .62rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em;
+      white-space: nowrap;
+    }
+
+    .badge-ok   { background: var(--green-lt); color: var(--green); }
+    .badge-no   { background: var(--red-lt);   color: var(--red); }
+    .badge-wait { background: var(--yellow-lt);color: var(--yellow); }
+
+    /* Actions voiture */
+    .car-actions { display: flex; gap: .4rem; }
+
+    .btn-icon {
+      width: 30px; height: 30px;
+      background: var(--g100); border: none;
+      border-radius: 7px; font-size: .85rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+
+    .btn-icon:hover { background: var(--g200); }
+
+    .btn-icon.danger:hover { background: var(--red-lt); }
+
+    /* Bouton ajouter dans la liste */
+    .add-car-btn {
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+      width: calc(100% - 3rem); margin: .75rem 1.5rem;
+      padding: .7rem;
+      background: var(--blue-pale);
+      border: 1.5px dashed #c7d7ff;
+      border-radius: 10px; font-size: .82rem; font-weight: 600;
+      color: var(--blue); transition: all .2s;
+    }
+
+    .add-car-btn:hover { background: var(--blue-lt); border-color: var(--blue); }
+
+
+    /* ══════════════════════════════════════════
+       RÉSERVATIONS RÉCENTES
+    ══════════════════════════════════════════ */
+    .resa-list { padding: .25rem 0; }
+
+    .resa-item {
+      padding: .9rem 1.5rem;
+      border-bottom: 1px solid var(--g100);
+      transition: background .15s;
+    }
+
+    .resa-item:last-child { border-bottom: none; }
+    .resa-item:hover { background: var(--g50); }
+
+    .resa-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: .3rem;
+    }
+
+    .resa-client { font-size: .87rem; font-weight: 600; color: var(--dark); }
+    .resa-id     { font-size: .68rem; color: var(--g400); font-weight: 500; }
+
+    .resa-car    { font-size: .78rem; color: var(--g500); }
+
+    .resa-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: .4rem;
+    }
+
+    .resa-dates  { font-size: .72rem; color: var(--g400); }
+
+    .resa-amount {
+      font-family: 'Syne', sans-serif;
+      font-size: .88rem; font-weight: 700; color: var(--blue);
+    }
+
+
+    /* ══════════════════════════════════════════
+       GRAPHE REVENUS (barres CSS pures)
+    ══════════════════════════════════════════ */
+    .chart-block { margin-bottom: 1.5rem; }
+
+    .chart-wrap {
+      padding: 1.5rem;
+    }
+
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: .6rem;
+      height: 120px;
+    }
+
+    .bar-col {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center; gap: .4rem;
+    }
+
+    .bar {
+      width: 100%;
+      border-radius: 6px 6px 0 0;
+      background: var(--blue-lt);
+      position: relative;
+      transition: background .2s;
+      min-height: 4px;
+    }
+
+    .bar.current { background: var(--blue); }
+    .bar:hover   { background: var(--orange); }
+
+    .bar-lbl { font-size: .65rem; color: var(--g400); font-weight: 500; }
+
+    .chart-legend {
+      display: flex; gap: 1.5rem;
+      padding: 0 1.5rem 1rem;
+    }
+
+    .legend-item {
+      display: flex; align-items: center; gap: .4rem;
+      font-size: .72rem; color: var(--g500);
+    }
+
+    .legend-dot {
+      width: 8px; height: 8px; border-radius: 2px;
+    }
+
+    .legend-dot.blue   { background: var(--blue); }
+    .legend-dot.lt     { background: var(--blue-lt); border: 1px solid #c7d7ff; }
+
+
+    /* ══════════════════════════════════════════
+       TABLEAU VOITURES COMPLET (section du bas)
+    ══════════════════════════════════════════ */
+    .table-block { margin-bottom: 2rem; }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: var(--g50);
+      padding: .7rem 1.5rem;
+      text-align: left;
+      font-size: .7rem; font-weight: 700;
+      color: var(--g500);
+      text-transform: uppercase; letter-spacing: .07em;
+      border-bottom: 1px solid var(--g200);
+    }
+
+    tbody td {
+      padding: .9rem 1.5rem;
+      font-size: .85rem;
+      border-bottom: 1px solid var(--g100);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--g50); }
+
+    .td-car {
+      display: flex; align-items: center; gap: .85rem;
+    }
+
+    .td-thumb {
+      width: 52px; height: 36px; flex-shrink: 0;
+      border-radius: 7px; overflow: hidden;
+      background: linear-gradient(145deg, var(--blue-lt), #dce8ff);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; border: 1px solid var(--g200);
+    }
+
+    .td-thumb img { width:100%; height:100%; object-fit:cover; }
+
+    .td-name  { font-weight: 600; color: var(--dark); font-size: .85rem; }
+    .td-brand { font-size: .7rem; color: var(--g400); margin-top: .1rem; }
+
+    .td-actions { display: flex; gap: .5rem; }
+
+
+    /* ══════════════════════════════════════════
+       MODAL AJOUTER VOITURE
+    ══════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(13,27,42,.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: white;
+      border-radius: 20px;
+      width: 100%; max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 32px 80px rgba(0,0,0,.25);
+      animation: modalIn .25s ease;
+    }
+
+    @keyframes modalIn {
+      from { opacity:0; transform:translateY(16px) scale(.97); }
+      to   { opacity:1; transform:none; }
+    }
+
+    .modal-head {
+      padding: 1.5rem 1.8rem 1rem;
+      border-bottom: 1px solid var(--g100);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .modal-head h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem; font-weight: 800; color: var(--dark);
+    }
+
+    .modal-head p { font-size: .8rem; color: var(--g400); margin-top: .2rem; }
+
+    .modal-close {
+      width: 32px; height: 32px;
+      background: var(--g100); border: none;
+      border-radius: 8px; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+
+    .modal-close:hover { background: var(--g200); }
+
+    .modal-body { padding: 1.5rem 1.8rem; }
+
+    /* Champs modal */
+    .m-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .m-field { display: flex; flex-direction: column; gap: .35rem; margin-bottom: .95rem; }
+
+    .m-field label {
+      font-size: .75rem; font-weight: 700; color: var(--dark);
+    }
+
+    .m-field label .req { color: var(--orange); }
+
+    .m-field input,
+    .m-field select,
+    .m-field textarea {
+      width: 100%;
+      padding: .68rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem; color: var(--dark);
+      background: var(--g100);
+      border: 1.5px solid transparent;
+      border-radius: 10px; outline: none;
+      transition: all .2s;
+      -webkit-appearance: none;
+    }
+
+    .m-field input::placeholder { color: #cbd5e1; }
+
+    .m-field input:focus,
+    .m-field select:focus,
+    .m-field textarea:focus {
+      border-color: var(--blue);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(15,45,110,.1);
+    }
+
+    .m-field textarea { resize: vertical; min-height: 80px; }
+
+    /* Zone upload photo */
+    .upload-zone {
+      border: 2px dashed var(--g200);
+      border-radius: 12px;
+      padding: 1.8rem 1rem;
+      text-align: center; cursor: pointer;
+      transition: all .2s; background: var(--g50);
+    }
+
+    .upload-zone:hover { border-color: var(--blue); background: var(--blue-pale); }
+
+    .upload-ico { font-size: 2rem; margin-bottom: .5rem; }
+    .upload-zone p { font-size: .82rem; color: var(--g500); }
+    .upload-zone small { font-size: .7rem; color: var(--g200); }
+
+    #preview-img {
+      margin-top: .75rem;
+      display: none;
+      width: 100%; max-height: 160px;
+      object-fit: cover; border-radius: 10px;
+      border: 1.5px solid var(--g200);
+    }
+
+    /* Checkbox dispo */
+    .dispo-row {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .7rem 1rem;
+      background: var(--g100); border-radius: 10px;
+      margin-bottom: .95rem;
+    }
+
+    .dispo-row input { width:15px; height:15px; accent-color:var(--blue); }
+    .dispo-row label { font-size: .82rem; color: var(--g600); cursor: pointer; }
+
+    /* Pied modal */
+    .modal-foot {
+      padding: 1rem 1.8rem 1.5rem;
+      border-top: 1px solid var(--g100);
+      display: flex; gap: .75rem;
+    }
+
+    .btn-cancel {
+      flex: 1; padding: .75rem;
+      background: var(--g100); color: var(--g600);
+      border: none; border-radius: 10px;
+      font-size: .88rem; font-weight: 600;
+      transition: background .2s;
+    }
+
+    .btn-cancel:hover { background: var(--g200); }
+
+    .btn-save {
+      flex: 2; padding: .75rem;
+      background: var(--blue); color: white;
+      border: none; border-radius: 10px;
+      font-size: .88rem; font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      box-shadow: 0 4px 14px rgba(15,45,110,.25);
+      transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+    }
+
+    .btn-save:hover { background: var(--blue-mid); transform: translateY(-1px); }
+
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    @media (max-width: 1200px) {
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .main-grid  { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: none; }
+      .main { margin-left: 0; }
+      .hamburger { display: flex !important; }
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .content    { padding: 1rem; }
+      .topbar     { padding: .75rem 1rem; }
+      .m-row2     { grid-template-columns: 1fr; }
+    }
+
+    .hamburger {
+      display: none;
+      background: var(--g100); border: none;
+      width: 36px; height: 36px; border-radius: 9px;
+      align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+
+  </style>
+</head>
+<body>
+
+
+  <!-- ══════════════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Logo -->
+    <div class="sb-logo">
+      <div class="sb-logo-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="3" width="15" height="13" rx="2"/>
+          <path d="M16 8h4l3 3v5h-7V8z"/>
+          <circle cx="5.5" cy="18.5" r="2.5"/>
+          <circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="sb-logo-text">Car<span>Rent</span></div>
+        <div class="sb-logo-sub">Espace entreprise</div>
+      </div>
+    </div>
+
+    <!-- Profil entreprise -->
+    <div class="sb-profile">
+      <div class="sb-avatar">AL</div>
+      <div>
+        <div class="sb-profile-name">AutoLux Madagascar</div>
+        <div class="sb-profile-badge">En ligne</div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sb-nav">
+
+      <div class="sb-section-label">Principal</div>
+
+      <a href="#" class="active" onclick="showSection('dashboard',this)">
+        <div class="nav-ico">📊</div>
+        Tableau de bord
+      </a>
+
+      <a href="#" onclick="showSection('voitures',this)">
+        <div class="nav-ico">🚗</div>
+        Mes voitures
+        <span class="nav-badge" id="badge-cars">0</span>
+      </a>
+
+      <a href="#" onclick="showSection('reservations',this)">
+        <div class="nav-ico">📋</div>
+        Réservations
+        <span class="nav-badge" id="badge-resa">0</span>
+      </a>
+
+      <div class="sb-section-label" style="margin-top:.5rem;">Gestion</div>
+
+      <a href="#" onclick="showSection('revenus',this)">
+        <div class="nav-ico">💰</div>
+        Revenus
+      </a>
+
+      <a href="#" onclick="showSection('profil',this)">
+        <div class="nav-ico">🏢</div>
+        Profil entreprise
+      </a>
+
+    </nav>
+
+    <!-- Pied -->
+    <div class="sb-footer">
+      <a href="index.html">🌐 Voir le site public</a>
+      <a href="connexion.html">🚪 Se déconnecter</a>
+    </div>
+
+  </aside>
+
+
+  <!-- ══════════════════════════════════════════
+       CONTENU PRINCIPAL
+  ══════════════════════════════════════════ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div style="display:flex; align-items:center; gap:1rem;">
+        <button class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+        <div class="topbar-left">
+          <h1 id="page-title">Tableau de bord</h1>
+          <p id="page-sub">Lundi 05 mars 2026 — Bonjour, AutoLux 👋</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button id="btnAddVoiture" type="button" class="btn-add">
+          ＋ Ajouter une voiture
+        </button>
+        <button class="notif-btn">
+          🔔
+          <span class="notif-dot"></span>
+        </button>
+        <div class="user-chip">
+          <div class="user-ava">AL</div>
+          <span class="user-name">AutoLux</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ── CONTENU ── -->
+    <div class="content">
+
+
+      <!-- ════════════════════════
+           SECTION : DASHBOARD
+      ════════════════════════ -->
+      <div id="section-dashboard">
+
+        <!-- Stats -->
+        <div class="stats-grid">
+
+          <div class="stat-card blue">
+            <div class="stat-top">
+              <div class="stat-ico blue">🚗</div>
+            </div>
+            <div class="stat-val" id="stat-cars">0</div>
+            <div class="stat-lbl">Voitures publiées</div>
+          </div>
+
+          <div class="stat-card orange">
+            <div class="stat-top">
+              <div class="stat-ico orange">📋</div>
+            </div>
+            <div class="stat-val" id="stat-reservations">0</div>
+            <div class="stat-lbl">Réservations totales</div>
+          </div>
+
+          <div class="stat-card green">
+            <div class="stat-top">
+              <div class="stat-ico green">💰</div>
+            </div>
+            <div class="stat-val" id="stat-revenus">0</div>
+            <div class="stat-lbl">Revenus (Ar) ce mois</div>
+          </div>
+
+          <div class="stat-card red">
+            <div class="stat-top">
+              <div class="stat-ico red">⭐</div>
+            </div>
+            <div class="stat-val" id="stat-note">—</div>
+            <div class="stat-lbl">Note moyenne</div>
+          </div>
+
+        </div>
+
+        <!-- Graphe revenus -->
+        <div class="block chart-block">
+          <div class="block-head">
+            <div>
+              <div class="block-title">Revenus mensuels</div>
+              <div class="block-sub">En milliers d'Ariary</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <div class="chart-bars" id="chartBars">
+              <!-- généré par JS -->
+            </div>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot blue"></div> Mois en cours</div>
+            <div class="legend-item"><div class="legend-dot lt"></div> Mois précédents</div>
+          </div>
+        </div>
+
+        <!-- Grille voitures + réservations -->
+        <div class="main-grid">
+
+          <!-- Mes voitures (aperçu) -->
+          <div class="block">
+            <div class="block-head">
+              <div>
+                <div class="block-title">Mes voitures</div>
+                <div class="block-sub" id="cars-summary">0 véhicules publiés</div>
+              </div>
+              <button class="btn-see-all" onclick="showSection('voitures', null)">
+                Voir tout
+              </button>
+            </div>
+            <div class="car-list" id="carListDashboard"></div>
+            <button class="add-car-btn" onclick="openModal()">
+              ＋ Ajouter une voiture
+            </button>
+          </div>
+
+          <!-- Réservations récentes -->
+          <div class="block">
+            <div class="block-head">
+              <div>
+                <div class="block-title">Réservations récentes</div>
+                <div class="block-sub" id="reservations-summary">0 en attente</div>
+              </div>
+              <button class="btn-see-all" onclick="showSection('reservations', null)">
+                Voir tout
+              </button>
+            </div>
+            <div class="resa-list" id="resaListDashboard"></div>
+          </div>
+
+        </div>
+
+      </div><!-- /section-dashboard -->
+
+
+      <!-- ════════════════════════
+           SECTION : MES VOITURES
+      ════════════════════════ -->
+      <div id="section-voitures" style="display:none">
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+          <div>
+            <div style="font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--dark);">Toutes mes voitures</div>
+            <div style="font-size:.78rem; color:var(--g400); margin-top:.2rem;">Gérez votre flotte</div>
+          </div>
+          <button class="btn-add" onclick="openModal()">＋ Ajouter une voiture</button>
+        </div>
+
+        <div class="block table-block">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Voiture</th>
+                  <th>Prix / jour</th>
+                  <th>Statut</th>
+                  <th>Réservations</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="carsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /section-voitures -->
+
+
+      <!-- ════════════════════════
+           SECTION : RÉSERVATIONS
+      ════════════════════════ -->
+      <div id="section-reservations" style="display:none">
+
+        <div style="margin-bottom:1.5rem;">
+          <div style="font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--dark);">Toutes les réservations</div>
+          <div style="font-size:.78rem; color:var(--g400); margin-top:.2rem;">Historique complet</div>
+        </div>
+
+        <div class="block">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Client</th>
+                  <th>Voiture</th>
+                  <th>Dates</th>
+                  <th>Durée</th>
+                  <th>Montant</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody id="resaTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /section-reservations -->
+
+
+      <!-- ════════════════════════
+           SECTION : REVENUS
+      ════════════════════════ -->
+      <div id="section-revenus" style="display:none">
+
+        <div style="margin-bottom:1.5rem;">
+          <div style="font-family:'Syne',sans-serif; font-size:1rem; font-weight:700;">Revenus</div>
+          <div style="font-size:.78rem; color:var(--g400);">Suivi financier de votre activité</div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card green">
+            <div class="stat-top"><div class="stat-ico green">💰</div><span class="stat-trend up">↑ 12%</span></div>
+            <div class="stat-val">1.2M</div>
+            <div class="stat-lbl">Ce mois (Ar)</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-top"><div class="stat-ico blue">📈</div><span class="stat-trend up">↑ 8%</span></div>
+            <div class="stat-val">8.4M</div>
+            <div class="stat-lbl">Cette année (Ar)</div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-top"><div class="stat-ico orange">🏆</div></div>
+            <div class="stat-val">120K</div>
+            <div class="stat-lbl">Meilleure journée (Ar)</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-top"><div class="stat-ico red">📊</div></div>
+            <div class="stat-val">85 000</div>
+            <div class="stat-lbl">Revenu moyen / résa (Ar)</div>
+          </div>
+        </div>
+
+        <div class="block" style="margin-top:1.5rem;">
+          <div class="block-head"><div class="block-title">Évolution annuelle</div></div>
+          <div class="chart-wrap">
+            <div class="chart-bars" id="chartBars2"></div>
+          </div>
+        </div>
+
+      </div><!-- /section-revenus -->
+
+
+      <!-- ════════════════════════
+           SECTION : PROFIL
+      ════════════════════════ -->
+      <div id="section-profil" style="display:none">
+
+        <div style="margin-bottom:1.5rem;">
+          <div style="font-family:'Syne',sans-serif; font-size:1rem; font-weight:700;">Profil entreprise</div>
+          <div style="font-size:.78rem; color:var(--g400);">Gérez vos informations</div>
+        </div>
+
+        <div class="block" style="max-width:600px;">
+          <div class="block-head"><div class="block-title">Informations générales</div></div>
+          <div style="padding:1.5rem;">
+            <div class="m-field">
+              <label>Nom de l'entreprise</label>
+              <div class="m-field"><input type="text" value="AutoLux Madagascar" /></div>
+            </div>
+            <div class="m-row2">
+              <div class="m-field">
+                <label>Email</label>
+                <input type="email" value="contact@autolux.mg" />
+              </div>
+              <div class="m-field">
+                <label>Téléphone</label>
+                <input type="tel" value="+261 34 00 000 00" />
+              </div>
+            </div>
+            <div class="m-field">
+              <label>Ville</label>
+              <select>
+                <option selected>Antananarivo</option>
+                <option>Toamasina</option>
+                <option>Mahajanga</option>
+              </select>
+            </div>
+            <div class="m-field">
+              <label>Description</label>
+              <textarea>Agence de location de voitures premium à Antananarivo depuis 2020.</textarea>
+            </div>
+            <button class="btn-save" style="width:auto; padding:.75rem 2rem;">
+              💾 Enregistrer les modifications
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /section-profil -->
+
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+
+  <!-- ══════════════════════════════════════════
+       MODAL AJOUTER UNE VOITURE
+  ══════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+    <div class="modal">
+
+      <div class="modal-head">
+        <div>
+          <h2>Ajouter une voiture</h2>
+          <p>Publiez un nouveau véhicule sur CarRent</p>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="m-row2">
+          <div class="m-field">
+            <label>Marque <span class="req">*</span></label>
+            <input type="text" id="m-marque" placeholder="Toyota, BMW…" />
+          </div>
+          <div class="m-field">
+            <label>Modèle <span class="req">*</span></label>
+            <input type="text" id="m-modele" placeholder="Corolla, X5…" />
+          </div>
+        </div>
+
+        <div class="m-row2">
+          <div class="m-field">
+            <label>Prix / jour (Ar) <span class="req">*</span></label>
+            <input type="number" id="m-prix" placeholder="45 000" min="1" />
+          </div>
+          <div class="m-field">
+            <label>Catégorie</label>
+            <select id="m-categorie">
+              <option value="" disabled selected>Choisir…</option>
+              <option>Berline</option>
+              <option>SUV</option>
+              <option>4×4</option>
+              <option>Compact</option>
+              <option>Luxe</option>
+              <option>Utilitaire</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="m-field">
+          <label>Photo <span class="req">★ Votre propre photo</span></label>
+          <div class="upload-zone" onclick="document.getElementById('m-img-input').click()">
+            <div class="upload-ico">📸</div>
+            <p>Cliquez pour choisir votre photo</p>
+            <small>JPG, PNG, WEBP — 5 Mo max</small>
+          </div>
+          <input type="file" id="m-img-input" accept="image/*"
+                 style="display:none" onchange="previewPhoto(this)" />
+          <img id="preview-img" src="" alt="Aperçu" />
+        </div>
+
+        <div class="dispo-row">
+          <input type="checkbox" id="m-dispo" checked />
+          <label for="m-dispo">Disponible immédiatement à la réservation</label>
+        </div>
+
+        <div class="m-field">
+          <label>Description (optionnel)</label>
+          <textarea id="m-desc" placeholder="Climatisation, GPS, boîte automatique…"></textarea>
+        </div>
+
+      </div>
+
+      <div class="modal-foot">
+        <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+        <button class="btn-save" onclick="saveVoiture()">
+          ✅ Publier la voiture
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════
+       JAVASCRIPT
+  ══════════════════════════════════════════ -->
+  <script type="module">
+    import {
+      store,
+      logout,
+      fetchVoitures,
+      fetchReservations,
+      fetchEntrepriseMe,
+      createVoiture,
+      removeVoiture,
+      updateReservation,
+      confirmReservation,
+      refuseReservation,
+      terminateReservation,
+      uploadVoiturePhoto
+    } from './js/app.js';
+
+    let voitures = [];
+    let reservations = [];
+    let currentPhotoFile = null;
+
+    const formatAr = (value) => {
+      return new Intl.NumberFormat('fr-FR').format(value);
+    };
+
+    const isAdminView = () => store.user?.role === 'admin';
+    const isEntrepriseView = () => store.user?.role === 'entreprise';
+
+    const setHeader = () => {
+      const title = document.getElementById('page-title');
+      const sub = document.getElementById('page-sub');
+      if (!store.user) return;
+      title.textContent = 'Tableau de bord';
+      if (isAdminView()) {
+        sub.textContent = 'Mode administrateur — lecture seule';
+        return;
+      }
+
+      const userLabel = isEntrepriseView() && store.user.entreprise && store.user.entreprise.nom_entreprise
+        ? store.user.entreprise.nom_entreprise
+        : `${store.user.prenom} ${store.user.nom}`;
+      sub.textContent = `Bonjour, ${userLabel} 👋`;
+    };
+
+    const setRolePermissions = () => {
+      const addButtons = document.querySelectorAll('#btnAddVoiture, .add-car-btn, #section-voitures .btn-add');
+      addButtons.forEach(btn => {
+        if (btn) btn.style.display = isAdminView() ? 'none' : 'inline-flex';
+      });
+
+      const profileControls = document.querySelectorAll('#section-profil input, #section-profil textarea, #section-profil select, #section-profil .btn-save');
+      profileControls.forEach(control => {
+        if (isAdminView()) {
+          control.disabled = true;
+          if (control.tagName === 'BUTTON') {
+            control.style.display = 'none';
+          }
+        } else {
+          control.disabled = false;
+          if (control.tagName === 'BUTTON') {
+            control.style.display = 'inline-flex';
+          }
+        }
+      });
+    };
+
+    const setBadges = () => {
+      document.getElementById('badge-cars').textContent = voitures.length;
+      document.getElementById('badge-resa').textContent = reservations.length;
+    };
+
+    const renderCarsDashboard = () => {
+      const container = document.getElementById('carListDashboard');
+      if (!container) return;
+      if (voitures.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:2rem; color:var(--g400);">
+            <div style="font-size:2rem; margin-bottom:.5rem;">🚗</div>
+            <div style="font-size:.85rem;">Aucune voiture publiée</div>
+            <div style="font-size:.75rem; margin-top:.3rem;">Cliquez sur "Ajouter une voiture" pour commencer</div>
+          </div>`;
+        return;
+      }
+
+      const html = voitures.slice(0, 4).map(v => `
+        <div class="car-row">
+          <div class="car-thumb">
+            ${v.photoUrl ? `<img src="/api/voitures/${v.id}/photo" alt="${v.marque}" onerror="this.style.display='none'" />` : '🚗'}
+          </div>
+          <div class="car-info">
+            <div class="car-name">${v.marque} ${v.modele}</div>
+            <div class="car-meta">${v.statut}</div>
+          </div>
+          <div class="car-price">${formatAr(v.prix_jour)}<small> Ar/j</small></div>
+          <span class="badge ${v.statut === 'disponible' ? 'badge-ok' : 'badge-no'}">
+            ${v.statut}
+          </span>
+          ${isAdminView() ? '' : `<div class="car-actions">
+            <button class="btn-icon" title="Supprimer" onclick="deleteVoiture(${v.id})">🗑️</button>
+          </div>`}
+        </div>
+      `).join('');
+
+      container.innerHTML = html;
+    };
+
+    const renderResaDashboard = () => {
+      const container = document.getElementById('resaListDashboard');
+      if (!container) return;
+
+      if (reservations.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:2rem; color:var(--g400);">
+            <div style="font-size:2rem; margin-bottom:.5rem;">📋</div>
+            <div style="font-size:.85rem;">Aucune réservation pour le moment</div>
+          </div>`;
+        return;
+      }
+
+      const html = reservations.slice(0, 4).map(r => {
+        const statut = r.statut || 'en_attente';
+        const badge = statut === 'confirmee' ? 'badge-wait' : statut === 'terminee' ? 'badge-ok' : 'badge-no';
+        const label = statut.replace('_', ' ');
+        const actionButtons = isEntrepriseView()
+          ? statut === 'en_attente'
+            ? `<div class="action-row">
+                <button class="ab success" onclick="changeReservationStatus(${r.id}, 'confirmee')">✔ Confirmer</button>
+                <button class="ab danger" onclick="changeReservationStatus(${r.id}, 'annulee')">✖ Refuser</button>
+              </div>`
+            : statut === 'confirmee'
+            ? `<div class="action-row">
+                <button class="ab" onclick="changeReservationStatus(${r.id}, 'terminee')">⏱ Terminer</button>
+              </div>`
+            : ''
+          : '';
+        return `<div class="resa-item">
+            <div class="resa-top">
+              <span class="resa-client">${r.client ? r.client.prenom + ' ' + r.client.nom : 'Client'}</span>
+              <span class="badge ${badge}">${label}</span>
+            </div>
+            <div class="resa-car">🚗 ${r.voiture ? r.voiture.marque + ' ' + r.voiture.modele : ''}</div>
+            <div class="resa-bottom">
+              <span class="resa-dates">📅 ${new Date(r.date_debut).toLocaleDateString('fr-FR')} → ${new Date(r.date_fin).toLocaleDateString('fr-FR')}</span>
+              <span class="resa-amount">${formatAr(r.montant || 0)} Ar</span>
+            </div>
+            ${actionButtons}
+          </div>`;
+      }).join('');
+
+      container.innerHTML = html;
+    };
+
+    const renderCarsTable = () => {
+      const tbody = document.getElementById('carsTableBody');
+      if (!tbody) return;
+      if (voitures.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align:center; color:var(--g400); padding:1.5rem;">Aucune voiture disponible</td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = voitures.map((v) => {
+        const photo = v.photoUrl ? `<img src="/api/voitures/${v.id}/photo" alt="${v.marque} ${v.modele}" onerror="this.style.display='none'" />` : '🚗';
+        const activeResas = (v.reservations || []).filter(r => r.statut !== 'annulee' && r.statut !== 'terminee');
+        const sortedResas = activeResas.sort((a, b) => new Date(a.date_debut) - new Date(b.date_debut));
+        const nextResa = sortedResas.length ? sortedResas[0] : null;
+        const reservationText = nextResa
+          ? `${new Date(nextResa.date_debut).toLocaleDateString('fr-FR')} → ${new Date(nextResa.date_fin).toLocaleDateString('fr-FR')}`
+          : `${v.reservations ? v.reservations.length : 0} résa`;
+        return `
+          <tr>
+            <td>
+              <div class="td-car">
+                <div class="td-thumb">${photo}</div>
+                <div>
+                  <div class="td-name">${v.marque} ${v.modele}</div>
+                  <div class="td-brand">${v.categorie || 'Autre'}</div>
+                </div>
+              </div>
+            </td>
+            <td>${formatAr(v.prix_jour)} Ar</td>
+            <td><span class="badge ${v.statut === 'disponible' ? 'badge-ok' : 'badge-no'}">${v.statut}</span></td>
+            <td>${reservationText}</td>
+            <td><button class="btn-icon danger" onclick="deleteVoiture(${v.id})">🗑️</button></td>
+          </tr>`;
+      }).join('');
+    };
+
+    const renderResaTable = () => {
+      const tbody = document.getElementById('resaTableBody');
+      if (!tbody) return;
+      if (reservations.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align:center; color:var(--g400); padding:1.5rem;">Aucune réservation trouvée</td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = reservations.map((r) => {
+        const statut = r.statut || 'en_attente';
+        const badgeClass = statut === 'confirmee' ? 'badge-wait' : statut === 'terminee' ? 'badge-ok' : 'badge-no';
+        const duree = Math.max(1, Math.round((new Date(r.date_fin) - new Date(r.date_debut)) / 86400000));
+        return `
+          <tr>
+            <td>${r.reference || '#' + r.id}</td>
+            <td>${r.client ? `${r.client.prenom} ${r.client.nom}` : 'Client'}</td>
+            <td>${r.voiture ? `${r.voiture.marque} ${r.voiture.modele}` : '—'}</td>
+            <td>${new Date(r.date_debut).toLocaleDateString('fr-FR')} → ${new Date(r.date_fin).toLocaleDateString('fr-FR')}</td>
+            <td>${duree} jour${duree > 1 ? 's' : ''}</td>
+            <td>${formatAr(r.montant || 0)} Ar</td>
+            <td><span class="badge ${badgeClass}">${statut.replace('_', ' ')}</span></td>
+          </tr>`;
+      }).join('');
+    };
+
+    const changeReservationStatus = async (id, status) => {
+      try {
+        if (status === 'confirmee') {
+          await confirmReservation(id);
+        } else if (status === 'annulee') {
+          await refuseReservation(id);
+        } else if (status === 'terminee') {
+          await terminateReservation(id);
+        } else {
+          await updateReservation(id, { statut: status });
+        }
+        await refreshData();
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    const updateStats = () => {
+      const carsCount = voitures.length;
+      const reservationsCount = reservations.length;
+      const revenus = reservations.reduce((sum, r) => sum + (r.montant || 0), 0);
+      document.getElementById('stat-cars').textContent = carsCount;
+      document.getElementById('stat-reservations').textContent = reservationsCount;
+      document.getElementById('stat-revenus').textContent = formatAr(revenus);
+      const carsLabel = document.getElementById('cars-summary');
+      const resaLabel = document.getElementById('reservations-summary');
+      if (carsLabel) carsLabel.textContent = `${carsCount} véhicule${carsCount > 1 ? 's' : ''} publié${carsCount > 1 ? 's' : ''}`;
+      if (resaLabel) resaLabel.textContent = `${reservationsCount} en attente`;
+    };
+
+    const refreshData = async () => {
+      try {
+        if (isEntrepriseView()) {
+          const entreprise = await fetchEntrepriseMe();
+          store.user.entreprise = entreprise;
+          localStorage.setItem('carrent_user', JSON.stringify(store.user));
+        }
+
+        voitures = await fetchVoitures();
+        reservations = await fetchReservations();
+        setBadges();
+        updateStats();
+        renderCarsDashboard();
+        renderResaDashboard();
+        renderCarsTable();
+        renderResaTable();
+        setRolePermissions();
+      } catch (err) {
+        console.error('[Dashboard] refreshData error', err);
+        alert('Erreur de chargement des données : ' + (err.message || err));
+        // Set defaults to prevent errors
+        voitures = [];
+        reservations = [];
+        setBadges();
+        updateStats();
+        renderCarsDashboard();
+        renderResaDashboard();
+        renderCarsTable();
+        renderResaTable();
+        setRolePermissions();
+      }
+    };
+
+    const openModal = () => {
+      document.getElementById('modalOverlay').classList.add('open');
+    };
+
+    const closeModal = () => {
+      document.getElementById('modalOverlay').classList.remove('open');
+      currentPhotoFile = null;
+      document.getElementById('preview-img').src = '';
+      document.getElementById('m-marque').value = '';
+      document.getElementById('m-modele').value = '';
+      document.getElementById('m-prix').value = '';
+      document.getElementById('m-categorie').value = '';
+      document.getElementById('m-desc').value = '';
+      document.getElementById('m-dispo').checked = true;
+    };
+
+    const closeModalOutside = (event) => {
+      if (event.target.id === 'modalOverlay') closeModal();
+    };
+
+    const previewPhoto = (input) => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      currentPhotoFile = file;
+      const url = URL.createObjectURL(file);
+      document.getElementById('preview-img').src = url;
+    };
+
+    const saveVoiture = async () => {
+      const marque = document.getElementById('m-marque').value.trim();
+      const modele = document.getElementById('m-modele').value.trim();
+      const prix   = Number(document.getElementById('m-prix').value);
+      const categorie = document.getElementById('m-categorie').value;
+      const desc   = document.getElementById('m-desc').value.trim();
+      const dispo  = document.getElementById('m-dispo').checked;
+
+      if (!marque || !modele || !prix) {
+        return alert('Marque, modèle et prix sont requis');
+      }
+
+      try {
+        const newCar = await createVoiture({
+          marque,
+          modele,
+          annee: new Date().getFullYear(),
+          prix_jour: prix,
+          statut: dispo ? 'disponible' : 'maintenance',
+          description: desc,
+          photoUrl: ''
+        });
+        if (currentPhotoFile) {
+          await uploadVoiturePhoto(newCar.id, currentPhotoFile);
+        }
+        await refreshData();
+        closeModal();
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    // Attach UI actions
+    const addButton = document.getElementById('btnAddVoiture');
+    if (addButton) addButton.addEventListener('click', openModal);
+
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.closeModalOutside = closeModalOutside;
+    window.previewPhoto = previewPhoto;
+    window.saveVoiture = saveVoiture;
+    window.deleteVoiture = async (id) => {
+      if (!confirm('Supprimer cette voiture ?')) return;
+      try {
+        await removeVoiture(id);
+        await refreshData();
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    window.changeReservationStatus = changeReservationStatus;
+
+    const showSection = (section) => {
+      document.querySelectorAll('#section-dashboard, #section-voitures, #section-reservations, #section-revenus, #section-profil').forEach(el => el.style.display = 'none');
+      const target = document.getElementById(`section-${section}`);
+      if (target) target.style.display = 'block';
+    };
+
+    window.showSection = showSection;
+
+    const init = async () => {
+      if (!store.user) {
+        window.location.href = 'connexion.html';
+        return;
+      }
+      setHeader();
+      await refreshData();
+      showSection('dashboard');
+    };
+
+    init();
+  </script>
+
+</body>
+</html>

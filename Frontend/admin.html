@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administration — CarRent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+
+    :root {
+      --blue      : #0f2d6e;
+      --blue-mid  : #1a4098;
+      --blue-lt   : #eef3ff;
+      --orange    : #f5620f;
+      --orange-lt : #fff3ed;
+      --dark      : #0d1b2a;
+      --sidebar   : #060f1e;
+      --g700      : #1e293b;
+      --g600      : #4a5568;
+      --g500      : #64748b;
+      --g400      : #94a3b8;
+      --g200      : #e2e8f0;
+      --g100      : #f1f5f9;
+      --g50       : #f8fafc;
+      --white     : #ffffff;
+      --green     : #16a34a;
+      --green-lt  : #dcfce7;
+      --red       : #dc2626;
+      --red-lt    : #fee2e2;
+      --yellow    : #d97706;
+      --yellow-lt : #fef3c7;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:'DM Sans',sans-serif; background:var(--g50); color:var(--dark); display:flex; min-height:100vh; }
+    a    { text-decoration:none; color:inherit; }
+    ul   { list-style:none; }
+
+    /* ══════════════════════════════════════
+       SIDEBAR
+    ══════════════════════════════════════ */
+    .sidebar {
+      width: 260px; flex-shrink: 0;
+      background: var(--sidebar);
+      display: flex; flex-direction: column;
+      position: fixed; top:0; bottom:0; left:0;
+      overflow-y: auto; z-index: 100;
+    }
+
+    /* Logo */
+    .sb-logo {
+      padding: 1.5rem 1.4rem 1.2rem;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      display: flex; align-items: center; gap: .65rem;
+    }
+
+    .sb-logo-box {
+      width: 36px; height: 36px;
+      background: var(--orange); border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .sb-logo-box svg { width: 20px; height: 20px; }
+
+    .sb-logo-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem; font-weight: 800; color: white;
+    }
+
+    .sb-logo-name span { color: var(--orange); }
+    .sb-logo-tag { font-size: .6rem; color: rgba(255,255,255,.25); margin-top: .1rem; }
+
+    /* Badge admin */
+    .sb-admin-chip {
+      margin: 1rem 1rem .4rem;
+      padding: .7rem 1rem;
+      background: rgba(245,98,15,.12);
+      border: 1px solid rgba(245,98,15,.2);
+      border-radius: 11px;
+      display: flex; align-items: center; gap: .7rem;
+    }
+
+    .sb-ava {
+      width: 34px; height: 34px; flex-shrink: 0;
+      background: linear-gradient(135deg,var(--orange),#ff8c42);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: .8rem; font-weight: 800; color: white;
+    }
+
+    .sb-admin-name { font-size: .82rem; font-weight: 600; color: white; line-height:1; }
+    .sb-admin-role { font-size: .62rem; color: var(--orange); margin-top: .2rem; font-weight:600; text-transform:uppercase; letter-spacing:.08em; }
+
+    /* Nav */
+    .sb-nav { padding: .5rem 0; flex: 1; }
+
+    .sb-label {
+      padding: .7rem 1.4rem .25rem;
+      font-size: .58rem; font-weight: 700;
+      color: rgba(255,255,255,.2);
+      text-transform: uppercase; letter-spacing: .14em;
+    }
+
+    .sb-nav a {
+      display: flex; align-items: center; gap: .7rem;
+      padding: .6rem 1.4rem;
+      font-size: .85rem; font-weight: 500;
+      color: rgba(255,255,255,.4);
+      border-right: 3px solid transparent;
+      transition: all .2s;
+    }
+
+    .sb-nav a .ni {
+      width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .95rem; transition: background .2s;
+    }
+
+    .sb-nav a:hover { color: rgba(255,255,255,.75); }
+    .sb-nav a:hover .ni { background: rgba(255,255,255,.07); }
+
+    .sb-nav a.active {
+      color: white;
+      border-right-color: var(--orange);
+      background: rgba(255,255,255,.05);
+    }
+
+    .sb-nav a.active .ni { background: rgba(245,98,15,.18); }
+
+    .nb {
+      margin-left: auto;
+      background: var(--orange); color: white;
+      font-size: .58rem; font-weight: 700;
+      padding: .12rem .4rem; border-radius: 100px; min-width:16px; text-align:center;
+    }
+
+    .nb.green { background: var(--green); }
+
+    /* Footer sidebar */
+    .sb-foot {
+      padding: 1rem 1.4rem;
+      border-top: 1px solid rgba(255,255,255,.06);
+      display: flex; flex-direction: column; gap: .5rem;
+    }
+
+    .sb-foot a {
+      display: flex; align-items: center; gap: .55rem;
+      font-size: .78rem; color: rgba(255,255,255,.25);
+      transition: color .2s;
+    }
+
+    .sb-foot a:hover { color: rgba(255,255,255,.65); }
+
+    /* ══════════════════════════════════════
+       MAIN
+    ══════════════════════════════════════ */
+    .main { margin-left: 260px; flex:1; display:flex; flex-direction:column; }
+
+    /* Topbar */
+    .topbar {
+      background: white; border-bottom: 1px solid var(--g200);
+      padding: .9rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top:0; z-index:50;
+      box-shadow: 0 1px 6px rgba(0,0,0,.05);
+    }
+
+    .tb-left h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem; font-weight: 800; color: var(--dark);
+    }
+
+    .tb-left p { font-size: .75rem; color: var(--g400); margin-top:.1rem; }
+
+    .tb-right { display:flex; align-items:center; gap:.85rem; }
+
+    .tb-date {
+      font-size: .78rem; color: var(--g500); font-weight: 500;
+      background: var(--g100); padding: .4rem .9rem; border-radius: 8px;
+    }
+
+    .notif {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: var(--g100); border: none; font-size: .95rem;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; cursor: pointer; transition: background .2s;
+    }
+
+    .notif:hover { background: var(--g200); }
+
+    .notif-dot {
+      position: absolute; top:5px; right:5px;
+      width:7px; height:7px;
+      background: var(--orange); border-radius:50%; border:1.5px solid white;
+    }
+
+    .admin-chip {
+      display:flex; align-items:center; gap:.5rem;
+      padding: .3rem .65rem .3rem .3rem;
+      background: var(--g100); border-radius:100px;
+      cursor:pointer; transition:background .2s;
+    }
+
+    .admin-chip:hover { background: var(--g200); }
+
+    .admin-ava {
+      width:26px; height:26px; border-radius:50%;
+      background: linear-gradient(135deg,var(--orange),#ff8c42);
+      display:flex; align-items:center; justify-content:center;
+      font-size:.62rem; font-weight:800; color:white;
+    }
+
+    .admin-chip span { font-size:.8rem; font-weight:600; color:var(--dark); }
+
+    /* Content */
+    .content { padding: 1.8rem 2rem; flex:1; }
+
+    /* ══════════════════════════════════════
+       CARDS STATS
+    ══════════════════════════════════════ */
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:1.2rem; margin-bottom:1.8rem; }
+
+    .sc {
+      background: white; border:1.5px solid var(--g200);
+      border-radius:15px; padding:1.3rem 1.4rem;
+      box-shadow:0 2px 8px rgba(0,0,0,.04);
+      transition:all .25s; position:relative; overflow:hidden;
+    }
+
+    .sc:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.08); }
+
+    .sc::after {
+      content:''; position:absolute; top:-25px; right:-25px;
+      width:90px; height:90px; border-radius:50%; opacity:.05;
+    }
+
+    .sc.c-blue::after   { background:var(--blue); }
+    .sc.c-orange::after { background:var(--orange); }
+    .sc.c-green::after  { background:var(--green); }
+    .sc.c-red::after    { background:var(--red); }
+
+    .sc-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:.9rem; }
+
+    .sc-ico {
+      width:40px; height:40px; border-radius:10px;
+      display:flex; align-items:center; justify-content:center; font-size:1.1rem;
+    }
+
+    .sc-ico.blue   { background:var(--blue-lt); }
+    .sc-ico.orange { background:var(--orange-lt); }
+    .sc-ico.green  { background:var(--green-lt); }
+    .sc-ico.red    { background:var(--red-lt); }
+
+    .sc-val {
+      font-family:'Syne',sans-serif;
+      font-size:1.8rem; font-weight:800; color:var(--dark); line-height:1; margin-bottom:.25rem;
+    }
+
+    .sc-lbl { font-size:.75rem; color:var(--g500); font-weight:500; }
+
+    /* ══════════════════════════════════════
+       BLOCS GÉNÉRIQUES
+    ══════════════════════════════════════ */
+    .block {
+      background:white; border:1.5px solid var(--g200);
+      border-radius:15px; overflow:hidden;
+      box-shadow:0 2px 8px rgba(0,0,0,.04); margin-bottom:1.5rem;
+    }
+
+    .bh {
+      padding:1.1rem 1.5rem; border-bottom:1px solid var(--g100);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+
+    .bh-title { font-family:'Syne',sans-serif; font-size:.95rem; font-weight:700; color:var(--dark); }
+    .bh-sub   { font-size:.72rem; color:var(--g400); margin-top:.1rem; }
+
+    .btn-sm {
+      font-size:.75rem; font-weight:600; color:var(--blue);
+      background:var(--blue-lt); border:none;
+      padding:.32rem .75rem; border-radius:7px; cursor:pointer; transition:all .2s;
+    }
+
+    .btn-sm:hover { background:#dce8ff; }
+
+    /* ══════════════════════════════════════
+       TABLEAUX
+    ══════════════════════════════════════ */
+    .tbl-wrap { overflow-x:auto; }
+
+    table { width:100%; border-collapse:collapse; }
+
+    thead th {
+      background:var(--g50); padding:.65rem 1.5rem;
+      text-align:left; font-size:.67rem; font-weight:700;
+      color:var(--g500); text-transform:uppercase; letter-spacing:.07em;
+      border-bottom:1px solid var(--g200);
+    }
+
+    tbody td {
+      padding:.85rem 1.5rem; font-size:.84rem;
+      border-bottom:1px solid var(--g100); vertical-align:middle;
+    }
+
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr:hover { background:var(--g50); }
+
+    .badge {
+      padding:.2rem .6rem; border-radius:100px;
+      font-size:.62rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:.05em; white-space:nowrap;
+    }
+
+    .b-ok     { background:var(--green-lt); color:var(--green); }
+    .b-no     { background:var(--red-lt);   color:var(--red); }
+    .b-wait   { background:var(--yellow-lt);color:var(--yellow); }
+    .b-blue   { background:var(--blue-lt);  color:var(--blue); }
+
+    .act-btns { display:flex; gap:.4rem; }
+
+    .ab {
+      width:28px; height:28px; border-radius:7px; border:none;
+      background:var(--g100); font-size:.8rem;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:background .2s;
+    }
+
+    .ab:hover         { background:var(--g200); }
+    .ab.danger:hover  { background:var(--red-lt); }
+    .ab.success:hover { background:var(--green-lt); }
+
+    /* ══════════════════════════════════════
+       ÉTAT VIDE
+    ══════════════════════════════════════ */
+    .empty {
+      padding:3rem; text-align:center; color:var(--g400);
+    }
+
+    .empty .ico { font-size:2.5rem; margin-bottom:.7rem; }
+    .empty .et  { font-family:'Syne',sans-serif; font-size:.95rem; font-weight:700; color:var(--g500); margin-bottom:.3rem; }
+    .empty .es  { font-size:.82rem; }
+
+    /* ══════════════════════════════════════
+       GRILLE 2 COLONNES
+    ══════════════════════════════════════ */
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
+
+    /* ══════════════════════════════════════
+       SECTIONS CACHÉES
+    ══════════════════════════════════════ */
+    .section { display:none; }
+    .section.active { display:block; }
+
+    /* ══════════════════════════════════════
+       MODAL CONFIRMATION
+    ══════════════════════════════════════ */
+    .overlay {
+      position:fixed; inset:0; z-index:200;
+      background:rgba(13,27,42,.6); backdrop-filter:blur(4px);
+      display:none; align-items:center; justify-content:center; padding:1.5rem;
+    }
+
+    .overlay.open { display:flex; }
+
+    .modal {
+      background:white; border-radius:18px; padding:2rem;
+      width:100%; max-width:380px;
+      box-shadow:0 24px 60px rgba(0,0,0,.2);
+      animation:mIn .2s ease;
+    }
+
+    @keyframes mIn { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:none} }
+
+    .modal h3 { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; margin-bottom:.5rem; }
+    .modal p  { font-size:.85rem; color:var(--g500); margin-bottom:1.5rem; line-height:1.6; }
+
+    .modal-btns { display:flex; gap:.75rem; }
+
+    .mbtn-cancel {
+      flex:1; padding:.7rem; border-radius:10px; border:none;
+      background:var(--g100); color:var(--g600);
+      font-size:.85rem; font-weight:600; cursor:pointer; transition:background .2s;
+    }
+
+    .mbtn-cancel:hover { background:var(--g200); }
+
+    .mbtn-confirm {
+      flex:2; padding:.7rem; border-radius:10px; border:none;
+      background:var(--red); color:white;
+      font-family:'Syne',sans-serif; font-size:.85rem; font-weight:700;
+      cursor:pointer; transition:all .2s;
+    }
+
+    .mbtn-confirm:hover { background:#b91c1c; }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════ */
+    @media(max-width:1200px){ .stats{grid-template-columns:repeat(2,1fr);} .grid2{grid-template-columns:1fr;} }
+    @media(max-width:900px) { .main{margin-left:0;} .sidebar{transform:translateX(-100%);} .sidebar.open{transform:none;} }
+    @media(max-width:600px) { .stats{grid-template-columns:1fr;} .content{padding:1rem;} }
+
+  </style>
+</head>
+<body>
+
+
+  <!-- ══════════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sb-logo">
+      <div class="sb-logo-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="3" width="15" height="13" rx="2"/>
+          <path d="M16 8h4l3 3v5h-7V8z"/>
+          <circle cx="5.5" cy="18.5" r="2.5"/>
+          <circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="sb-logo-name">Car<span>Rent</span></div>
+        <div class="sb-logo-tag">Panneau d'administration</div>
+      </div>
+    </div>
+
+    <div class="sb-admin-chip">
+      <div class="sb-ava">AD</div>
+      <div>
+        <div class="sb-admin-name">Administrateur</div>
+        <div class="sb-admin-role">Super Admin</div>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+
+      <div class="sb-label">Tableau de bord</div>
+
+      <a href="#" class="active" data-section="overview">
+        <div class="ni">📊</div> Vue d'ensemble
+      </a>
+
+      <div class="sb-label">Gestion</div>
+
+      <a href="#" data-section="entreprises">
+        <div class="ni">🏢</div> Entreprises
+        <span class="nb" id="nb-ent">0</span>
+      </a>
+
+      <a href="#" data-section="clients">
+        <div class="ni">👥</div> Clients
+        <span class="nb" id="nb-cli">0</span>
+      </a>
+
+      <a href="#" data-section="voitures">
+        <div class="ni">🚗</div> Voitures
+        <span class="nb" id="nb-car">0</span>
+      </a>
+
+      <a href="#" data-section="reservations">
+        <div class="ni">📋</div> Réservations
+        <span class="nb green" id="nb-resa">0</span>
+      </a>
+
+      <div class="sb-label">Système</div>
+
+      <a href="#" data-section="parametres">
+        <div class="ni">⚙️</div> Paramètres
+      </a>
+
+    </nav>
+
+    <div class="sb-foot">
+      <a href="index.html">🌐 Voir le site public</a>
+      <a href="#" id="sb-logout">🚪 Déconnexion</a>
+    </div>
+
+  </aside>
+
+
+  <!-- ══════════════════════════════════════
+       MAIN
+  ══════════════════════════════════════ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="tb-left">
+        <h1 id="page-title">Vue d'ensemble</h1>
+        <p id="page-sub">Bienvenue, Administrateur 👋</p>
+      </div>
+      <div class="tb-right">
+        <span class="tb-date" id="dateNow"></span>
+        <button class="notif">🔔<span class="notif-dot"></span></button>
+        <div class="admin-chip">
+          <div class="admin-ava">AD</div>
+          <span>Admin</span>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="content">
+
+      <!-- ════════════════════════
+           VUE D'ENSEMBLE
+      ════════════════════════ -->
+      <div id="s-overview" class="section active">
+
+        <div class="stats">
+          <div class="sc c-blue">
+            <div class="sc-top"><div class="sc-ico blue">🏢</div></div>
+            <div class="sc-val" id="st-ent">0</div>
+            <div class="sc-lbl">Entreprises inscrites</div>
+          </div>
+          <div class="sc c-orange">
+            <div class="sc-top"><div class="sc-ico orange">👥</div></div>
+            <div class="sc-val" id="st-cli">0</div>
+            <div class="sc-lbl">Clients inscrits</div>
+          </div>
+          <div class="sc c-green">
+            <div class="sc-top"><div class="sc-ico green">🚗</div></div>
+            <div class="sc-val" id="st-car">0</div>
+            <div class="sc-lbl">Voitures publiées</div>
+          </div>
+          <div class="sc c-red">
+            <div class="sc-top"><div class="sc-ico red">📋</div></div>
+            <div class="sc-val" id="st-resa">0</div>
+            <div class="sc-lbl">Réservations totales</div>
+          </div>
+        </div>
+
+        <div class="grid2">
+
+          <!-- Dernières entreprises -->
+          <div class="block">
+            <div class="bh">
+              <div>
+                <div class="bh-title">Dernières entreprises</div>
+                <div class="bh-sub">Inscriptions récentes</div>
+              </div>
+              <button class="btn-sm" data-section="entreprises">Voir tout</button>
+            </div>
+            <div id="ov-ent">
+              <div class="empty">
+                <div class="ico">🏢</div>
+                <div class="et">Aucune entreprise</div>
+                <div class="es">Les nouvelles inscriptions apparaîtront ici</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Derniers clients -->
+          <div class="block">
+            <div class="bh">
+              <div>
+                <div class="bh-title">Derniers clients</div>
+                <div class="bh-sub">Inscriptions récentes</div>
+              </div>
+              <button class="btn-sm" data-section="clients">Voir tout</button>
+            </div>
+            <div id="ov-cli">
+              <div class="empty">
+                <div class="ico">👥</div>
+                <div class="et">Aucun client</div>
+                <div class="es">Les nouveaux comptes apparaîtront ici</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Dernières réservations -->
+        <div class="block">
+          <div class="bh">
+            <div>
+              <div class="bh-title">Dernières réservations</div>
+              <div class="bh-sub">Activité récente sur la plateforme</div>
+            </div>
+            <button class="btn-sm" data-section="reservations">Voir tout</button>
+          </div>
+          <div id="ov-resa">
+            <div class="empty">
+              <div class="ico">📋</div>
+              <div class="et">Aucune réservation</div>
+              <div class="es">Les réservations apparaîtront ici</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /overview -->
+
+
+      <!-- ════════════════════════
+           ENTREPRISES
+      ════════════════════════ -->
+      <div id="s-entreprises" class="section">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;">Entreprises inscrites</div>
+            <div style="font-size:.75rem;color:var(--g400);margin-top:.15rem;">Gérez les comptes entreprises</div>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Entreprise</th>
+                  <th>Email</th>
+                  <th>Ville</th>
+                  <th>Voitures</th>
+                  <th>Statut</th>
+                  <th>Inscription</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tb-ent">
+                <tr>
+                  <td colspan="7">
+                    <div class="empty">
+                      <div class="ico">🏢</div>
+                      <div class="et">Aucune entreprise inscrite</div>
+                      <div class="es">Les entreprises apparaîtront ici après leur inscription</div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /entreprises -->
+
+
+      <!-- ════════════════════════
+           CLIENTS
+      ════════════════════════ -->
+      <div id="s-clients" class="section">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;">Clients inscrits</div>
+            <div style="font-size:.75rem;color:var(--g400);margin-top:.15rem;">Gérez les comptes clients</div>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Email</th>
+                  <th>Téléphone</th>
+                  <th>Ville</th>
+                  <th>Réservations</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tb-cli">
+                <tr>
+                  <td colspan="7">
+                    <div class="empty">
+                      <div class="ico">👥</div>
+                      <div class="et">Aucun client inscrit</div>
+                      <div class="es">Les clients apparaîtront ici après leur inscription</div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /clients -->
+
+
+      <!-- ════════════════════════
+           VOITURES
+      ════════════════════════ -->
+      <div id="s-voitures" class="section">
+
+        <div style="margin-bottom:1.2rem;">
+          <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;">Toutes les voitures</div>
+          <div style="font-size:.75rem;color:var(--g400);margin-top:.15rem;">Voitures publiées par les entreprises</div>
+        </div>
+
+        <div class="block">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Voiture</th>
+                  <th>Entreprise</th>
+                  <th>Catégorie</th>
+                  <th>Prix / jour</th>
+                  <th>Statut</th>
+                  <th>Publication</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tb-car">
+                <tr>
+                  <td colspan="7">
+                    <div class="empty">
+                      <div class="ico">🚗</div>
+                      <div class="et">Aucune voiture publiée</div>
+                      <div class="es">Les voitures apparaîtront ici quand les entreprises en ajouteront</div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /voitures -->
+
+
+      <!-- ════════════════════════
+           RÉSERVATIONS
+      ════════════════════════ -->
+      <div id="s-reservations" class="section">
+
+        <div style="margin-bottom:1.2rem;">
+          <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;">Toutes les réservations</div>
+          <div style="font-size:.75rem;color:var(--g400);margin-top:.15rem;">Historique complet de la plateforme</div>
+        </div>
+
+        <div class="block">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Client</th>
+                  <th>Voiture</th>
+                  <th>Entreprise</th>
+                  <th>Dates</th>
+                  <th>Montant</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tb-resa">
+                <tr>
+                  <td colspan="8">
+                    <div class="empty">
+                      <div class="ico">📋</div>
+                      <div class="et">Aucune réservation</div>
+                      <div class="es">Les réservations apparaîtront ici</div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /reservations -->
+
+
+      <!-- ════════════════════════
+           PARAMÈTRES
+      ════════════════════════ -->
+      <div id="s-parametres" class="section">
+
+        <div style="margin-bottom:1.2rem;">
+          <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;">Paramètres</div>
+          <div style="font-size:.75rem;color:var(--g400);margin-top:.15rem;">Configuration de la plateforme</div>
+        </div>
+
+        <div class="block" style="max-width:560px;">
+          <div class="bh"><div class="bh-title">Informations du site</div></div>
+          <div style="padding:1.5rem; display:flex; flex-direction:column; gap:1rem;">
+
+            <div>
+              <label style="font-size:.75rem;font-weight:700;color:var(--dark);display:block;margin-bottom:.35rem;">Nom du site</label>
+              <input type="text" value="CarRent Madagascar" style="width:100%;padding:.68rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;background:var(--g100);border:1.5px solid transparent;border-radius:10px;outline:none;transition:all .2s;" onfocus="this.style.borderColor='var(--blue)';this.style.background='white'" onblur="this.style.borderColor='transparent';this.style.background='var(--g100)'" />
+            </div>
+
+            <div>
+              <label style="font-size:.75rem;font-weight:700;color:var(--dark);display:block;margin-bottom:.35rem;">Email de contact</label>
+              <input type="email" value="contact@carrent.mg" style="width:100%;padding:.68rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;background:var(--g100);border:1.5px solid transparent;border-radius:10px;outline:none;transition:all .2s;" onfocus="this.style.borderColor='var(--blue)';this.style.background='white'" onblur="this.style.borderColor='transparent';this.style.background='var(--g100)'" />
+            </div>
+
+            <div>
+              <label style="font-size:.75rem;font-weight:700;color:var(--dark);display:block;margin-bottom:.35rem;">Mot de passe admin</label>
+              <input type="password" placeholder="Nouveau mot de passe…" style="width:100%;padding:.68rem 1rem;font-family:'DM Sans',sans-serif;font-size:.88rem;background:var(--g100);border:1.5px solid transparent;border-radius:10px;outline:none;" onfocus="this.style.borderColor='var(--blue)';this.style.background='white'" onblur="this.style.borderColor='transparent';this.style.background='var(--g100)'" />
+            </div>
+
+            <button style="align-self:flex-start;padding:.7rem 1.8rem;background:var(--blue);color:white;font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;border:none;border-radius:10px;cursor:pointer;box-shadow:0 4px 14px rgba(15,45,110,.25);transition:all .2s;" onmouseover="this.style.background='var(--blue-mid)'" onmouseout="this.style.background='var(--blue)'">
+              💾 Enregistrer
+            </button>
+
+          </div>
+        </div>
+
+      </div><!-- /parametres -->
+
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+
+  <!-- Modal confirmation suppression -->
+  <div class="overlay" id="overlay" onclick="closeModal(event)">
+    <div class="modal">
+      <h3>⚠️ Confirmer la suppression</h3>
+      <p>Cette action est irréversible. Voulez-vous vraiment supprimer cet élément ?</p>
+      <div class="modal-btns">
+        <button class="mbtn-cancel" onclick="document.getElementById('overlay').classList.remove('open')">
+          Annuler
+        </button>
+        <button class="mbtn-confirm" id="confirmBtn">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script type="module">
+    import { store, logout, fetchUsers, fetchVoitures, fetchReservations, deleteUser, toggleBlockUser, updateReservation, removeVoiture } from './js/app.js';
+
+    /* ── Navigation sections ───────────────────── */
+    const sections = ['overview','entreprises','clients','voitures','reservations','parametres'];
+
+    const titles = {
+      overview     : ['Vue d\'ensemble',      'Bienvenue, Administrateur 👋'],
+      entreprises  : ['Entreprises',          'Gestion des comptes entreprises'],
+      clients      : ['Clients',              'Gestion des comptes clients'],
+      voitures     : ['Voitures',             'Toutes les voitures de la plateforme'],
+      reservations : ['Réservations',         'Historique complet des réservations'],
+      parametres   : ['Paramètres',           'Configuration de la plateforme'],
+    };
+
+    function show(name, link) {
+      sections.forEach(s => {
+        const el = document.getElementById('s-' + s);
+        if (el) el.classList.toggle('active', s === name);
+      });
+
+      const navLinks = document.querySelectorAll('[data-section]');
+      navLinks.forEach(a => a.classList.toggle('active', a.dataset.section === name));
+
+      const [t, s] = titles[name] || ['', ''];
+      document.getElementById('page-title').textContent = t;
+      document.getElementById('page-sub').textContent   = s;
+    }
+
+    /* ── Date ──────────────────────────────────── */
+    function setDate() {
+      const d = new Date();
+      const opts = { weekday:'long', day:'numeric', month:'long', year:'numeric' };
+      document.getElementById('dateNow').textContent =
+        d.toLocaleDateString('fr-FR', opts);
+    }
+
+    setDate();
+
+    /* ── Admin data rendering ───────────────────── */
+    const setStats = ({ entreprises, clients, voitures, reservations }) => {
+      document.getElementById('nb-ent').textContent = entreprises.length;
+      document.getElementById('nb-cli').textContent = clients.length;
+      document.getElementById('nb-car').textContent = voitures.length;
+      document.getElementById('nb-resa').textContent = reservations.length;
+
+      document.getElementById('st-ent').textContent = entreprises.length;
+      document.getElementById('st-cli').textContent = clients.length;
+      document.getElementById('st-car').textContent = voitures.length;
+      document.getElementById('st-resa').textContent = reservations.length;
+    };
+
+    const renderReservationsOverview = (reservations) => {
+      const container = document.getElementById('ov-resa');
+      if (!container) return;
+
+      if (!reservations || !reservations.length) {
+        container.innerHTML = `
+          <div class="empty">
+            <div class="ico">📋</div>
+            <div class="et">Aucune réservation</div>
+            <div class="es">Les réservations apparaîtront ici</div>
+          </div>
+        `;
+        return;
+      }
+
+      const items = reservations.slice(0, 4).map((r) => {
+        const client = r.client ? `${r.client.prenom} ${r.client.nom}` : 'Client inconnu';
+        const car = r.voiture ? `${r.voiture.marque} ${r.voiture.modele}` : 'Voiture inconnue';
+        const company = r.voiture?.entreprise ? r.voiture.entreprise.nom_entreprise || `${r.voiture.entreprise.prenom} ${r.voiture.entreprise.nom}` : 'Entreprise inconnue';
+        const dates = `${new Date(r.date_debut).toLocaleDateString('fr-FR')} → ${new Date(r.date_fin).toLocaleDateString('fr-FR')}`;
+        return `
+          <div class="item">
+            <div><strong>${client}</strong> • ${company}</div>
+            <div>${car}</div>
+            <div>${dates}</div>
+            <div>${r.montant || 0} Ar</div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `<div class="recent-list">${items}</div>`;
+    };
+
+    const renderReservationsTable = (reservations) => {
+      const tbody = document.getElementById('tb-resa');
+      if (!tbody) return;
+
+      if (!reservations || !reservations.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8">
+              <div class="empty">
+                <div class="ico">📋</div>
+                <div class="et">Aucune réservation</div>
+                <div class="es">Les réservations apparaîtront ici</div>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = reservations.map((r, i) => {
+        const client = r.client ? `${r.client.prenom} ${r.client.nom}` : 'Client inconnu';
+        const car = r.voiture ? `${r.voiture.marque} ${r.voiture.modele}` : 'Voiture inconnue';
+        const owner = r.voiture?.entreprise ? (r.voiture.entreprise.nom_entreprise || `${r.voiture.entreprise.prenom} ${r.voiture.entreprise.nom}`) : 'Entreprise inconnue';
+        const dates = `${new Date(r.date_debut).toLocaleDateString('fr-FR')} → ${new Date(r.date_fin).toLocaleDateString('fr-FR')}`;
+        const status = r.statut || 'en_attente';
+        return `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${client}</td>
+            <td>${car}</td>
+            <td>${owner}</td>
+            <td>${dates}</td>
+            <td>${r.montant || 0} Ar</td>
+            <td>${status}</td>
+            <td>―</td>
+          </tr>
+        `;
+      }).join('');
+    };
+
+    const renderEntreprises = (users) => {
+      const tbody = document.getElementById('tb-ent');
+      if (!tbody) return;
+
+      if (!users.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7">
+              <div class="empty">
+                <div class="ico">🏢</div>
+                <div class="et">Aucune entreprise inscrite</div>
+                <div class="es">Les entreprises apparaîtront ici après leur inscription</div>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = users.map((u, i) => {
+        const ent = u.entreprise || {};
+        const status = u.blocked ? 'Bloqué' : 'Actif';
+        const blockLabel = u.blocked ? 'Débloquer' : 'Bloquer';
+        const blockIcon = u.blocked ? '🔓' : '🔒';
+
+        return `
+          <tr>
+            <td>${ent.nom_entreprise || (u.prenom + ' ' + u.nom)}</td>
+            <td>${u.email}</td>
+            <td>${ent.adresse || '-'}</td>
+            <td>${u.voitures ? u.voitures.length : 0}</td>
+            <td>${status}</td>
+            <td>${new Date(u.createdAt).toLocaleDateString('fr-FR')}</td>
+            <td>
+              <button class="btn-icon btn-delete-user" data-user-id="${u.id}" title="Supprimer">🗑️</button>
+              <button class="btn-icon btn-block-user" data-user-id="${u.id}" title="${blockLabel}">${blockIcon}</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    };
+
+    const renderClients = (users) => {
+      const tbody = document.getElementById('tb-cli');
+      if (!tbody) return;
+
+      if (!users.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7">
+              <div class="empty">
+                <div class="ico">👥</div>
+                <div class="et">Aucun client inscrit</div>
+                <div class="es">Les clients apparaîtront ici après leur inscription</div>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = users.map((u, i) => {
+        const cli = u.client || {};
+        const status = u.blocked ? 'Bloqué' : 'Actif';
+        const blockLabel = u.blocked ? 'Débloquer' : 'Bloquer';
+        const blockIcon = u.blocked ? '🔓' : '🔒';
+
+        return `
+          <tr>
+            <td>${u.prenom} ${u.nom}</td>
+            <td>${u.email}</td>
+            <td>${cli.telephone || '-'}</td>
+            <td>${cli.adresse || '-'}</td>
+            <td>${u.reservations ? u.reservations.length : 0}</td>
+            <td>${status}</td>
+            <td>
+              <button class="btn-icon btn-delete-user" data-user-id="${u.id}" title="Supprimer">🗑️</button>
+              <button class="btn-icon btn-block-user" data-user-id="${u.id}" title="${blockLabel}">${blockIcon}</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    };
+
+    const renderVoituresAdmin = (cars) => {
+      const tbody = document.getElementById('tb-car');
+      if (!tbody) return;
+
+      if (!cars || !cars.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7">
+              <div class="empty">
+                <div class="ico">🚗</div>
+                <div class="et">Aucune voiture publiée</div>
+                <div class="es">Les voitures apparaîtront ici quand elles seront ajoutées</div>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = cars.map((v, i) => {
+        const owner = v.entreprise?.nom_entreprise || `${v.entreprise?.prenom || ''} ${v.entreprise?.nom || ''}`.trim() || 'Inconnu';
+        return `
+          <tr>
+            <td>${v.marque} ${v.modele}</td>
+            <td>${owner}</td>
+            <td>${v.categorie || 'Autre'}</td>
+            <td>${v.prix_jour} Ar</td>
+            <td>${v.statut || 'inconnu'}</td>
+            <td>${new Date(v.createdAt).toLocaleDateString('fr-FR')}</td>
+            <td>
+              <button class="btn-icon btn-delete-car" data-car-id="${v.id}" title="Supprimer">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    };
+
+    const refreshData = async () => {
+      try {
+        const [entreprises, clients, voitures, reservations] = await Promise.all([
+          fetchUsers('entreprise'),
+          fetchUsers('client'),
+          fetchVoitures(),
+          fetchReservations(),
+        ]);
+
+        setStats({ entreprises, clients, voitures, reservations });
+        renderEntreprises(entreprises);
+        renderClients(clients);
+        renderVoituresAdmin(voitures);
+        renderReservationsOverview(reservations);
+        renderReservationsTable(reservations);
+        attachDeleteListeners();
+      } catch (err) {
+        console.error(err);
+        alert(err.message || 'Erreur lors du chargement des données');
+      }
+    };
+
+    const attachDeleteListeners = () => {
+      document.querySelectorAll('.btn-delete-user').forEach(btn => {
+        const id = btn.dataset.userId;
+        btn.onclick = async () => {
+          if (!confirm('Supprimer cet utilisateur ?')) return;
+          try {
+            await deleteUser(id);
+            await refreshData();
+          } catch (err) {
+            alert(err.message || 'Impossible de supprimer cet utilisateur');
+          }
+        };
+      });
+
+      document.querySelectorAll('.btn-block-user').forEach(btn => {
+        const id = btn.dataset.userId;
+        btn.onclick = async () => {
+          try {
+            await toggleBlockUser(id);
+            await refreshData();
+          } catch (err) {
+            alert(err.message || 'Impossible de mettre à jour le statut de l\'utilisateur');
+          }
+        };
+      });
+
+      document.querySelectorAll('.btn-delete-car').forEach(btn => {
+        const id = btn.dataset.carId;
+        btn.onclick = async () => {
+          if (!confirm('Supprimer cette voiture ?')) return;
+          try {
+            await removeVoiture(id);
+            await refreshData();
+          } catch (err) {
+            alert(err.message || 'Impossible de supprimer cette voiture');
+          }
+        };
+      });
+    };
+
+    const changeReservationStatus = async (id, statut) => {
+      if (!confirm(`Changer le statut de la réservation #${id} en ${statut.replace('_', ' ')} ?`)) return;
+      try {
+        await updateReservation(id, { statut });
+        await refreshData();
+      } catch (err) {
+        alert(err.message || 'Impossible de mettre à jour le statut de la réservation');
+      }
+    };
+
+    const attachNavListeners = () => {
+      document.querySelectorAll('[data-section]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          show(el.dataset.section);
+        });
+      });
+    };
+
+    const init = async () => {
+      if (!store.user || store.user.role !== 'admin') {
+        window.location.href = '/connexion.html';
+        return;
+      }
+
+      const logoutBtn = document.getElementById('sb-logout');
+      if (logoutBtn) logoutBtn.onclick = (e) => { e.preventDefault(); logout(); };
+
+      attachNavListeners();
+      refreshData();
+      show('overview');
+    };
+
+    init();
+  </script>
+
+</body>
+</html>

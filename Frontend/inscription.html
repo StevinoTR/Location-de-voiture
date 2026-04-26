@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscription — CarRent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+
+    :root {
+      --blue    : #0f2d6e;
+      --blue-mid: #1a4098;
+      --blue-lt : #eef3ff;
+      --orange  : #f5620f;
+      --dark    : #0d1b2a;
+      --g600    : #4a5568;
+      --g400    : #94a3b8;
+      --g200    : #e2e8f0;
+      --g100    : #f1f5f9;
+      --white   : #ffffff;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    a { text-decoration:none; color:inherit; }
+
+    /* FOND PLEIN ÉCRAN — VOTRE IMAGE ICI*/
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+
+      background-image: url('voiture5.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    /* Couche sombre sur l'image */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: rgba(10, 20, 50, 0.72);
+      z-index: 0;
+    }
+
+    /* ══════════════════════════════════════════
+       BARRE EN HAUT
+    ══════════════════════════════════════════ */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 2rem;
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: .6rem;
+    }
+
+    .logo-box {
+      width: 38px; height: 38px;
+      background: white;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .logo-box svg { width: 22px; height: 22px; }
+
+    .logo-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem; font-weight: 800;
+      color: white;
+    }
+
+    .logo-name span { color: var(--orange); }
+
+    .back {
+      font-size: .85rem; font-weight: 600;
+      color: rgba(255,255,255,.65);
+      transition: color .2s;
+    }
+
+    .back:hover { color: white; }
+
+    /* ══════════════════════════════════════════
+       CARTE FORMULAIRE — CENTRÉE SUR L'IMAGE
+    ══════════════════════════════════════════ */
+    .page {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 1.5rem 3rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 22px;
+      width: 100%;
+      max-width: 500px;
+      padding: 2.5rem 2.8rem;
+      box-shadow: 0 32px 96px rgba(0,0,0,.45);
+    }
+
+    /* En-tête carte */
+    .card-head { margin-bottom: 1.8rem; }
+
+    .eyebrow {
+      font-size: .7rem; font-weight: 700;
+      color: var(--orange);
+      text-transform: uppercase; letter-spacing: .14em;
+      margin-bottom: .5rem;
+    }
+
+    .card-head h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem; font-weight: 800;
+      color: var(--dark);
+      letter-spacing: -.02em;
+      margin-bottom: .4rem;
+    }
+
+    .card-head p { font-size: .88rem; color: var(--g400); }
+    .card-head p a { color: var(--blue); font-weight: 600; }
+    .card-head p a:hover { color: var(--orange); }
+
+    /* Onglets type de compte */
+    .role-tabs {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: .7rem; margin-bottom: 1.6rem;
+    }
+
+    .role-tab {
+      display: flex; align-items: center; gap: .7rem;
+      padding: .9rem 1rem;
+      border: 1.5px solid var(--g200);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all .2s;
+      background: white;
+    }
+
+    .role-tab:hover { border-color: #c7d7ff; background: var(--blue-lt); }
+
+    .role-tab.active {
+      border-color: var(--blue);
+      background: var(--blue-lt);
+      box-shadow: 0 0 0 3px rgba(15,45,110,.1);
+    }
+
+    .tab-ico {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: var(--g100);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; transition: background .2s;
+    }
+
+    .role-tab.active .tab-ico { background: var(--blue); }
+
+    .tab-name { font-size: .85rem; font-weight: 700; color: var(--dark); }
+    .tab-sub  { font-size: .7rem;  color: var(--g400); margin-top: .1rem; }
+
+    /* Séparateur */
+    .sep {
+      display: flex; align-items: center; gap: .8rem;
+      margin-bottom: 1.3rem;
+    }
+
+    .sep::before, .sep::after {
+      content: ''; flex: 1; height: 1px; background: var(--g200);
+    }
+
+    .sep span {
+      font-size: .7rem; font-weight: 600;
+      color: var(--g400); text-transform: uppercase; letter-spacing: .08em;
+    }
+
+    /* Champs */
+    .fields { display: flex; flex-direction: column; gap: .95rem; }
+
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+
+    .field { display: flex; flex-direction: column; gap: .35rem; }
+
+    .field label {
+      font-size: .76rem; font-weight: 700;
+      color: var(--dark);
+    }
+
+    .field label .req { color: var(--orange); }
+
+    .wrap { position: relative; }
+
+    .wrap .ico {
+      position: absolute; left: .85rem; top: 50%;
+      transform: translateY(-50%);
+      font-size: .95rem; pointer-events: none; opacity: .4;
+    }
+
+    .wrap input,
+    .wrap select {
+      width: 100%;
+      padding: .7rem 1rem .7rem 2.3rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem; color: var(--dark);
+      background: var(--g100);
+      border: 1.5px solid transparent;
+      border-radius: 10px;
+      outline: none;
+      transition: all .2s;
+      -webkit-appearance: none;
+    }
+
+    .wrap input::placeholder { color: #cbd5e1; }
+
+    .wrap input:focus,
+    .wrap select:focus {
+      border-color: var(--blue);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(15,45,110,.1);
+    }
+
+    .eye {
+      position: absolute; right: .85rem; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; font-size: .88rem;
+      color: var(--g400); padding: 0;
+      transition: color .2s;
+    }
+
+    .eye:hover { color: var(--blue); }
+
+    /* Force mot de passe */
+    .strength { margin-top: .35rem; }
+
+    .s-bar {
+      height: 4px; border-radius: 2px;
+      background: var(--g200); overflow: hidden; margin-bottom: .25rem;
+    }
+
+    .s-fill {
+      height: 100%; border-radius: 2px;
+      width: 0%; transition: width .3s, background .3s;
+    }
+
+    .s-text { font-size: .68rem; color: var(--g400); }
+
+    /* CGU */
+    .cgu {
+      display: flex; align-items: flex-start; gap: .7rem;
+      padding: .85rem 1rem;
+      background: var(--g100); border-radius: 10px;
+    }
+
+    .cgu input {
+      width: 15px; height: 15px; flex-shrink: 0;
+      margin-top: .15rem; accent-color: var(--blue); cursor: pointer;
+    }
+
+    .cgu label {
+      font-size: .8rem; color: var(--g600);
+      line-height: 1.55; cursor: pointer;
+    }
+
+    .cgu a { color: var(--blue); font-weight: 600; }
+    .cgu a:hover { color: var(--orange); }
+
+    /* Bouton */
+    .btn-submit {
+      width: 100%; padding: .9rem;
+      font-family: 'Syne', sans-serif;
+      font-size: .95rem; font-weight: 700;
+      color: white; background: var(--blue);
+      border: none; border-radius: 12px; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(15,45,110,.3);
+      transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+    }
+
+    .btn-submit:hover {
+      background: var(--blue-mid);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(15,45,110,.35);
+    }
+
+    .hint {
+      text-align: center;
+      font-size: .83rem; color: var(--g400);
+      margin-top: 1rem;
+    }
+
+    .hint a { color: var(--blue); font-weight: 600; }
+    .hint a:hover { color: var(--orange); }
+
+    /* Responsive */
+    @media (max-width: 560px) {
+      .card  { padding: 2rem 1.5rem; }
+      .row2  { grid-template-columns: 1fr; }
+      .role-tabs { grid-template-columns: 1fr; }
+      .topbar { padding: 1rem; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Barre du haut -->
+  <div class="topbar">
+    <a href="index.html" class="logo">
+      <div class="logo-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f2d6e"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="3" width="15" height="13" rx="2"/>
+          <path d="M16 8h4l3 3v5h-7V8z"/>
+          <circle cx="5.5"  cy="18.5" r="2.5"/>
+          <circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+      </div>
+      <span class="logo-name">Car<span>Rent</span></span>
+    </a>
+    <a href="index.html" class="back">Retour au site</a>
+  </div>
+
+
+  <!-- Page -->
+  <div class="page">
+    <div class="card">
+
+      <!-- En-tête -->
+      <div class="card-head">
+        <div class="eyebrow">Nouveau compte</div>
+        <h1>Créer un compte</h1>
+      </div>
+
+      <!-- Rôle -->
+      <div class="role-tabs">
+        <div class="role-tab active" data-role="client" onclick="selectRole(this)">
+          <div class="tab-ico">👤</div>
+          <div>
+            <div class="tab-name">Client</div>
+            <div class="tab-sub">Je veux louer</div>
+          </div>
+        </div>
+        <div class="role-tab" data-role="entreprise" onclick="selectRole(this)">
+          <div class="tab-ico">🏢</div>
+          <div>
+            <div class="tab-name">Entreprise</div>
+            <div class="tab-sub">Je propose des voitures</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sep"><span>Vos informations</span></div>
+
+      <!-- Formulaire -->
+      <form id="form" novalidate>
+        <div class="fields">
+
+          <div class="row2">
+            <div class="field">
+              <label for="prenom">Prénom <span class="req">*</span></label>
+              <div class="wrap">
+                <span class="ico">👤</span>
+                <input type="text" id="prenom" placeholder="Jean"
+                       autocomplete="given-name" required />
+              </div>
+            </div>
+            <div class="field">
+              <label for="nom">Nom <span class="req">*</span></label>
+              <div class="wrap">
+                <span class="ico">👤</span>
+                <input type="text" id="nom" placeholder="Rakoto"
+                       autocomplete="family-name" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="field" id="fieldEnt" style="display:none">
+            <label for="entreprise">Nom de l'entreprise <span class="req">*</span></label>
+            <div class="wrap">
+              <span class="ico">🏢</span>
+              <input type="text" id="entreprise" placeholder="AutoLux Madagascar" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email">Email <span class="req">*</span></label>
+            <div class="wrap">
+              <span class="ico">✉️</span>
+              <input type="email" id="email" placeholder="jean@exemple.mg"
+                     autocomplete="email" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="tel">Téléphone</label>
+            <div class="wrap">
+              <span class="ico">📞</span>
+              <input type="tel" id="tel" placeholder="+261 38 66 027 35" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="ville">Ville <span class="req">*</span></label>
+            <div class="wrap">
+              <span class="ico">📍</span>
+              <select id="ville" required>
+                <option value="" disabled selected>Sélectionner…</option>
+                <option>Antananarivo</option>
+                <option>Toamasina</option>
+                <option>Mahajanga</option>
+                <option>Fianarantsoa</option>
+                <option>Toliara</option>
+                <option>Antsiranana</option>
+                <option>Autre</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="password">Mot de passe <span class="req">*</span></label>
+            <div class="wrap">
+              <span class="ico">🔒</span>
+              <input type="password" id="password"
+                     placeholder="8 caractères minimum"
+                     autocomplete="new-password" required
+                     oninput="checkStrength(this.value)" />
+              <button type="button" class="eye" onclick="toggleEye('password',this)">👁️</button>
+            </div>
+            <div class="strength">
+              <div class="s-bar"><div class="s-fill" id="sFill"></div></div>
+              <div class="s-text" id="sText">Entrez un mot de passe</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="confirm">Confirmer le mot de passe <span class="req">*</span></label>
+            <div class="wrap">
+              <span class="ico">🔒</span>
+              <input type="password" id="confirm"
+                     placeholder="Répétez votre mot de passe"
+                     autocomplete="new-password" required />
+              <button type="button" class="eye" onclick="toggleEye('confirm',this)">👁️</button>
+            </div>
+          </div>
+
+          <div class="cgu">
+            <input type="checkbox" id="cgu" required />
+            <label for="cgu">
+              J'accepte les <a href="#">Conditions d'utilisation</a>
+              et la <a href="#">Politique de confidentialité</a> de CarRent.
+            </label>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span>Créer mon compte</span><span></span>
+          </button>
+
+          <div class="hint">
+            Déjà un compte ? <a href="connexion.html">Se connecter</a>
+          </div>
+
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+
+  <script type="module">
+    import { register } from './js/app.js';
+
+    function selectRole(tab) {
+      document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const isEnt = tab.dataset.role === 'entreprise';
+      document.getElementById('fieldEnt').style.display = isEnt ? 'flex' : 'none';
+      document.getElementById('entreprise').required = isEnt;
+    }
+
+    function toggleEye(id, btn) {
+      const input = document.getElementById(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
+      btn.textContent = input.type === 'password' ? '👁️' : '🙈';
+    }
+
+    function checkStrength(val) {
+      const fill = document.getElementById('sFill');
+      const text = document.getElementById('sText');
+      let score = 0;
+      if (val.length >= 8)          score++;
+      if (/[A-Z]/.test(val))        score++;
+      if (/[0-9]/.test(val))        score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      const lv = [
+        { w:'0%',   c:'#e2e8f0', t:'Entrez un mot de passe' },
+        { w:'25%',  c:'#dc2626', t:'😬 Très faible' },
+        { w:'50%',  c:'#f97316', t:'⚠️ Faible' },
+        { w:'75%',  c:'#eab308', t:'👍 Moyen' },
+        { w:'100%', c:'#16a34a', t:'✅ Fort' },
+      ][val.length === 0 ? 0 : score];
+
+      fill.style.width = lv.w; fill.style.background = lv.c;
+      text.textContent = lv.t;
+      text.style.color = lv.c === '#e2e8f0' ? '#94a3b8' : lv.c;
+    }
+
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const prenom  = document.getElementById('prenom').value.trim();
+      const nom     = document.getElementById('nom').value.trim();
+      const email   = document.getElementById('email').value.trim();
+      const ville   = document.getElementById('ville').value;
+      const pass    = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+      const cgu     = document.getElementById('cgu').checked;
+      const role    = document.querySelector('.role-tab.active').dataset.role;
+      const entrepriseName = document.getElementById('entreprise').value.trim();
+
+      if (!prenom || !nom)      return alert('Entrez votre prénom et nom.');
+      if (!email.includes('@')) return alert('Email invalide.');
+      if (!ville)               return alert('Sélectionnez votre ville.');
+      if (pass.length < 8)      return alert('Mot de passe : 8 caractères minimum.');
+      if (pass !== confirm)     return alert('Les mots de passe ne correspondent pas.');
+      if (!cgu)                 return alert('Acceptez les CGU pour continuer.');
+      if (role === 'entreprise' && !entrepriseName) return alert('Entrez le nom de votre entreprise.');
+
+      const btn = document.getElementById('submitBtn');
+      btn.innerHTML = '<span>Création en cours…</span>';
+      btn.style.opacity = '.7';
+      btn.disabled = true;
+
+      try {
+        const payload = {
+          prenom,
+          nom,
+          email,
+          password: pass,
+          role,
+          adresse: ville,
+          telephone: document.getElementById('tel').value.trim(),
+          nom_entreprise: entrepriseName
+        };
+        const { user } = await register(payload);
+
+        // redirection en fonction du rôle
+        if (user.role === 'admin') {
+          window.location.href = 'admin.html';
+        } else if (user.role === 'entreprise') {
+          window.location.href = 'dashboard.html';
+        } else {
+          window.location.href = 'reservation.html';
+        }
+      } catch (err) {
+        alert(err.message);
+        btn.innerHTML = '<span>Créer mon compte</span>';
+        btn.style.opacity = '1';
+        btn.disabled = false;
+      }
+    });
+
+    // Rendre les fonctions accessibles depuis les attributs onclick du HTML
+    window.selectRole = selectRole;
+    window.toggleEye = toggleEye;
+  </script>
+
+</body>
+</html>

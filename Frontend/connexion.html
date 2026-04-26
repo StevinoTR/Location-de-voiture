@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion — CarRent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+
+    :root {
+      --blue    : #0f2d6e;
+      --blue-mid: #1a4098;
+      --blue-lt : #eef3ff;
+      --orange  : #f5620f;
+      --dark    : #0d1b2a;
+      --g600    : #4a5568;
+      --g400    : #94a3b8;
+      --g200    : #e2e8f0;
+      --g100    : #f1f5f9;
+      --white   : #ffffff;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    a { text-decoration:none; color:inherit; }
+
+    /* ══════════════════════════════════════════
+       FOND PLEIN ÉCRAN
+       ★ Remplacez bg_connexion.jpg par votre photo
+    ══════════════════════════════════════════ */
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      background-image: url('vouture5.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: rgba(10, 20, 50, 0.72);
+      z-index: 0;
+    }
+
+    /* ── Barre du haut ── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 2rem;
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: .6rem;
+    }
+
+    .logo-box {
+      width: 38px; height: 38px;
+      background: white;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .logo-box svg { width: 22px; height: 22px; }
+
+    .logo-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem; font-weight: 800;
+      color: white;
+    }
+
+    .logo-name span { color: var(--orange); }
+
+    .back {
+      font-size: .85rem; font-weight: 600;
+      color: rgba(255,255,255,.65);
+      transition: color .2s;
+    }
+
+    .back:hover { color: white; }
+
+    /* ── Conteneur centré ── */
+    .page {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 1.5rem 3rem;
+    }
+
+    /* ── Carte ── */
+    .card {
+      background: white;
+      border-radius: 22px;
+      width: 100%;
+      max-width: 440px;
+      padding: 2.5rem 2.8rem;
+      box-shadow: 0 32px 96px rgba(0,0,0,.45);
+    }
+
+    /* En-tête */
+    .card-head { margin-bottom: 2rem; }
+
+    .eyebrow {
+      font-size: .7rem; font-weight: 700;
+      color: var(--orange);
+      text-transform: uppercase; letter-spacing: .14em;
+      margin-bottom: .5rem;
+    }
+
+    .card-head h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.9rem; font-weight: 800;
+      color: var(--dark);
+      letter-spacing: -.02em;
+      margin-bottom: .4rem;
+    }
+
+    .card-head p { font-size: .88rem; color: var(--g400); }
+    .card-head p a { color: var(--blue); font-weight: 600; transition: color .2s; }
+    .card-head p a:hover { color: var(--orange); }
+
+    /* Séparateur */
+    .sep {
+      display: flex; align-items: center; gap: .8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .sep::before, .sep::after {
+      content: ''; flex: 1; height: 1px; background: var(--g200);
+    }
+
+    .sep span {
+      font-size: .7rem; font-weight: 600;
+      color: var(--g400); text-transform: uppercase; letter-spacing: .08em;
+    }
+
+    /* Champs */
+    .fields { display: flex; flex-direction: column; gap: 1rem; }
+
+    .field { display: flex; flex-direction: column; gap: .35rem; }
+
+    .field label {
+      font-size: .76rem; font-weight: 700;
+      color: var(--dark);
+    }
+
+    .field label .req { color: var(--orange); }
+
+    .wrap { position: relative; }
+
+    .wrap .ico {
+      position: absolute; left: .85rem; top: 50%;
+      transform: translateY(-50%);
+      font-size: .95rem; pointer-events: none; opacity: .4;
+    }
+
+    .wrap input {
+      width: 100%;
+      padding: .75rem 1rem .75rem 2.3rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem; color: var(--dark);
+      background: var(--g100);
+      border: 1.5px solid transparent;
+      border-radius: 10px;
+      outline: none;
+      transition: all .2s;
+    }
+
+    .wrap input::placeholder { color: #cbd5e1; }
+
+    .wrap input:focus {
+      border-color: var(--blue);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(15,45,110,.1);
+    }
+
+    /* Bouton afficher mot de passe */
+    .eye {
+      position: absolute; right: .85rem; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; font-size: .88rem;
+      color: var(--g400); padding: 0;
+      transition: color .2s;
+    }
+
+    .eye:hover { color: var(--blue); }
+
+    /* Ligne "Se souvenir + Mot de passe oublié" */
+    .extra-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .remember {
+      display: flex; align-items: center; gap: .5rem;
+      font-size: .8rem; color: var(--g600); cursor: pointer;
+    }
+
+    .remember input {
+      width: 15px; height: 15px;
+      accent-color: var(--blue); cursor: pointer;
+    }
+
+    .forgot {
+      font-size: .8rem; font-weight: 600;
+      color: var(--blue); transition: color .2s;
+    }
+
+    .forgot:hover { color: var(--orange); }
+
+    /* Bouton connexion */
+    .btn-submit {
+      width: 100%; padding: .9rem;
+      font-family: 'Syne', sans-serif;
+      font-size: .95rem; font-weight: 700;
+      color: white; background: var(--blue);
+      border: none; border-radius: 12px; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(15,45,110,.3);
+      transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+    }
+
+    .btn-submit:hover {
+      background: var(--blue-mid);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(15,45,110,.35);
+    }
+
+    .btn-submit:active { transform: translateY(0); }
+
+    /* Séparateur OU */
+    .or-sep {
+      display: flex; align-items: center; gap: .8rem;
+    }
+
+    .or-sep::before, .or-sep::after {
+      content: ''; flex: 1; height: 1px; background: var(--g200);
+    }
+
+    .or-sep span {
+      font-size: .72rem; color: var(--g400); font-weight: 500;
+    }
+
+    /* Bouton s'inscrire */
+    .btn-register {
+      width: 100%; padding: .85rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem; font-weight: 600;
+      color: var(--blue); background: var(--blue-lt);
+      border: 1.5px solid #c7d7ff;
+      border-radius: 12px; cursor: pointer;
+      transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+    }
+
+    .btn-register:hover {
+      background: #dce8ff; border-color: var(--blue);
+    }
+
+    /* Message d'erreur */
+    .error-box {
+      display: none;
+      background: #fee2e2; border: 1px solid #fecaca;
+      border-radius: 10px; padding: .75rem 1rem;
+      font-size: .82rem; color: #b91c1c;
+      align-items: center; gap: .5rem;
+    }
+
+    .error-box.show { display: flex; }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .card   { padding: 2rem 1.5rem; }
+      .topbar { padding: 1rem; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Barre du haut -->
+  <div class="topbar">
+    <a href="index.html" class="logo">
+      <div class="logo-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f2d6e"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="3" width="15" height="13" rx="2"/>
+          <path d="M16 8h4l3 3v5h-7V8z"/>
+          <circle cx="5.5"  cy="18.5" r="2.5"/>
+          <circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+      </div>
+      <span class="logo-name">Car<span>Rent</span></span>
+    </a>
+    <a href="index.html" class="back">Retour au site</a>
+  </div>
+
+
+  <!-- Page -->
+  <div class="page">
+    <div class="card">
+
+      <!-- En-tête -->
+      <div class="card-head">
+        <div class="eyebrow">Bon retour 👋</div>
+        <h1>Se connecter</h1>
+        <p>Pas encore de compte ? <a href="inscription.html">S'inscrire →</a></p>
+      </div>
+
+      <div class="sep"><span>Vos identifiants</span></div>
+
+      <!-- Message d'erreur -->
+      <div class="error-box" id="errorBox">
+        ❌ <span id="errorMsg">Email ou mot de passe incorrect.</span>
+      </div>
+
+      <!-- Formulaire -->
+      <form id="form" novalidate>
+        <div class="fields">
+
+          <!-- Email -->
+          <div class="field">
+            <label for="email">Adresse email <span class="req">*</span></label>
+            <div class="wrap">
+              <span class="ico">✉️</span>
+              <input type="email" id="email" placeholder="jean@exemple.mg"
+                     autocomplete="email" required />
+            </div>
+          </div>
+
+          <!-- Mot de passe -->
+          <div class="field">
+            <label for="password">Mot de passe <span class="req">*</span></label>
+            <div class="wrap">
+              <span class="ico">🔒</span>
+              <input type="password" id="password" placeholder="Votre mot de passe"
+                     autocomplete="current-password" required />
+              <button type="button" class="eye" onclick="toggleEye()">👁️</button>
+            </div>
+          </div>
+
+          <!-- Se souvenir + Mot de passe oublié -->
+          <div class="extra-row">
+            <label class="remember">
+              <input type="checkbox" id="remember" />
+              Se souvenir de moi
+            </label>
+            <a href="#" class="forgot">Mot de passe oublié ?</a>
+          </div>
+
+          <!-- Bouton connexion -->
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span>Se connecter</span>
+          </button>
+
+          <!-- Séparateur OU -->
+          <div class="or-sep"><span>ou</span></div>
+
+          <!-- Bouton créer un compte -->
+          <a href="inscription.html" class="btn-register">
+            ✏️ Créer un compte gratuitement
+          </a>
+
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+
+  <script type="module">
+    import { login } from './js/app.js';
+
+    function toggleEye() {
+      const input = document.getElementById('password');
+      const btn   = document.querySelector('.eye');
+      input.type  = input.type === 'password' ? 'text' : 'password';
+      btn.textContent = input.type === 'password' ? '👁️' : '🙈';
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('errorBox');
+      document.getElementById('errorMsg').textContent = msg;
+      box.classList.add('show');
+    }
+
+    function hideError() {
+      document.getElementById('errorBox').classList.remove('show');
+    }
+
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+
+      const email = document.getElementById('email').value.trim();
+      const pass  = document.getElementById('password').value;
+      const btn   = document.getElementById('submitBtn');
+
+      if (!email || !email.includes('@')) {
+        return showError('Entrez une adresse email valide.');
+      }
+      if (!pass) {
+        return showError('Entrez votre mot de passe.');
+      }
+
+      btn.innerHTML = '<span>Connexion en cours…</span>';
+      btn.style.opacity = '.7';
+      btn.disabled = true;
+
+      try {
+        const { user } = await login(email, pass);
+        // redirection en fonction du rôle
+        if (user.role === 'admin') {
+          window.location.href = 'admin.html';
+        } else if (user.role === 'entreprise') {
+          window.location.href = 'dashboard.html';
+        } else {
+          window.location.href = 'reservation.html';
+        }
+      } catch (err) {
+        showError(err.message);
+        btn.innerHTML = '<span>Se connecter</span>';
+        btn.style.opacity = '1';
+        btn.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
