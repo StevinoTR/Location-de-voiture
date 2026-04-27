@@ -1,8 +1,8 @@
-const bcrypt     = require('bcryptjs');
-const jwt        = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-const User       = require('../models/User');
-const Client     = require('../models/Client');
+const User = require('../models/User');
+const Client = require('../models/Client');
 const Entreprise = require('../models/Entreprise');
 
 const signToken = (user) => jwt.sign(
@@ -35,20 +35,20 @@ exports.register = async (req, res, next) => {
     // Créer le profil selon le rôle
     if (user.role === 'entreprise') {
       await Entreprise.create({
-        userId:         user.id,
+        userId: user.id,
         nom_entreprise: nom_entreprise || `${prenom} ${nom}`,
-        adresse:        adresse   || '',
-        telephone:      telephone || ''
+        adresse: adresse || '',
+        telephone: telephone || ''
       });
     } else {
       await Client.create({
-        userId:    user.id,
-        adresse:   adresse   || '',
+        userId: user.id,
+        adresse: adresse || '',
         telephone: telephone || ''
       });
     }
 
-    const token      = signToken(user);
+    const token = signToken(user);
     const entreprise = user.role === 'entreprise'
       ? await Entreprise.findOne({ where: { userId: user.id } })
       : null;
@@ -56,16 +56,16 @@ exports.register = async (req, res, next) => {
     return res.status(201).json({
       token,
       user: {
-        id:          user.id,
-        prenom:      user.prenom,
-        nom:         user.nom,
-        role:        user.role,
-        blocked:     user.blocked,
-        entreprise:  entreprise ? {
-          id:             entreprise.id,
+        id: user.id,
+        prenom: user.prenom,
+        nom: user.nom,
+        role: user.role,
+        blocked: user.blocked,
+        entreprise: entreprise ? {
+          id: entreprise.id,
           nom_entreprise: entreprise.nom_entreprise,
-          adresse:        entreprise.adresse,
-          telephone:      entreprise.telephone
+          adresse: entreprise.adresse,
+          telephone: entreprise.telephone
         } : null
       }
     });
@@ -86,7 +86,7 @@ exports.login = async (req, res, next) => {
       return res.status(403).json({ message: "Compte bloqué. Contactez l'administrateur." });
     }
 
-    const token      = signToken(user);
+    const token = signToken(user);
     const entreprise = user.role === 'entreprise'
       ? await Entreprise.findOne({ where: { userId: user.id } })
       : null;
@@ -94,16 +94,16 @@ exports.login = async (req, res, next) => {
     return res.json({
       token,
       user: {
-        id:         user.id,
-        prenom:     user.prenom,
-        nom:        user.nom,
-        role:       user.role,
-        blocked:    user.blocked,
+        id: user.id,
+        prenom: user.prenom,
+        nom: user.nom,
+        role: user.role,
+        blocked: user.blocked,
         entreprise: entreprise ? {
-          id:             entreprise.id,
+          id: entreprise.id,
           nom_entreprise: entreprise.nom_entreprise,
-          adresse:        entreprise.adresse,
-          telephone:      entreprise.telephone
+          adresse: entreprise.adresse,
+          telephone: entreprise.telephone
         } : null
       }
     });
