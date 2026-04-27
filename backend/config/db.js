@@ -5,10 +5,7 @@ const sequelizeOptions = {
   dialect: 'mysql',
   logging: false,
   dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false, // Temporaire pour debug
-    }
+    ssl: false, // Temporaire : désactiver SSL pour test
   },
   pool: {
     max: 5,
