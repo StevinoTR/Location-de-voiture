@@ -7,7 +7,7 @@ const sequelizeOptions = {
   dialectOptions: {
     ssl: {
       require: true,
-      rejectUnauthorized: true,
+      rejectUnauthorized: false, // Temporaire pour debug
     }
   },
   pool: {
@@ -28,6 +28,10 @@ const sequelize = process.env.DATABASE_URL
         host: process.env.DB_HOST,
         port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : undefined,
         ...sequelizeOptions,
+      }
+    );
+
+module.exports = sequelize;
       }
     );
 
