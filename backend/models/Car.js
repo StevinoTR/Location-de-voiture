@@ -19,10 +19,12 @@ const Car = sequelize.define('Car', {
   prix_jour:   { type: DataTypes.INTEGER, allowNull: false },
   statut:      { type: DataTypes.STRING,  allowNull: false, defaultValue: 'disponible' },
   description: { type: DataTypes.TEXT,   allowNull: true },
-  photoUrl:    { type: DataTypes.STRING,  allowNull: true }
+  photoUrl:    { type: DataTypes.STRING, allowNull: true, field: 'photourl' }
 }, {
   tableName:  'voitures',
-  timestamps: true
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 Car.belongsTo(User, {

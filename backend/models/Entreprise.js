@@ -18,7 +18,9 @@ const Entreprise = sequelize.define('Entreprise', {
   telephone:      { type: DataTypes.STRING, allowNull: true }
 }, {
   tableName:  'entreprises',
-  timestamps: true
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 Entreprise.belongsTo(User, { foreignKey: { name: 'userId', field: 'user_id' }, as: 'user' });

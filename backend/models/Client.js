@@ -17,7 +17,9 @@ const Client = sequelize.define('Client', {
   adresse:   { type: DataTypes.STRING, allowNull: true }
 }, {
   tableName:  'clients',
-  timestamps: true
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 Client.belongsTo(User, { foreignKey: { name: 'userId', field: 'user_id' }, as: 'user' });

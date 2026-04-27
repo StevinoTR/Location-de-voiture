@@ -11,7 +11,11 @@ exports.list = async (req, res, next) => {
     const users = await User.findAll({
       where,
       attributes: { exclude: ['password'] },
-      order: [['createdAt', 'DESC']]
+      include: [
+        { model: Client, as: 'client' },
+        { model: Entreprise, as: 'entreprise' }
+      ],
+      order: [['created_at', 'DESC']]
     });
     return res.json(users);
   } catch (err) { next(err); }
