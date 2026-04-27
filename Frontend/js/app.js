@@ -163,6 +163,31 @@ const toggleBlockUser = async (id) => apiFetch(`/users/${id}/block`, { method: '
 const fetchEntrepriseMe = async () => apiFetch('/entreprise/me');
 const fetchEntreprises = async () => apiFetch('/entreprises');
 
+// --- MOBILE MENU FUNCTIONS ---
+const toggleMenu = () => {
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (hamburger && mobileMenu) {
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+    document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+  }
+};
+
+const closeMenu = () => {
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (hamburger && mobileMenu) {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+};
+
+// Make functions available globally for onclick handlers
+window.toggleMenu = toggleMenu;
+window.closeMenu = closeMenu;
+
 export {
   store, login, logout, register,
   fetchVoitures, createVoiture, updateVoiture, removeVoiture, uploadVoiturePhoto,
