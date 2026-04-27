@@ -56,7 +56,7 @@ app.get('/health', (req, res) =>
 );
 
 // Fallback HTML
-app.get('/*', (req, res) => {
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'), err => {
     if (err) res.status(404).json({ message: 'Page introuvable.' });
   });
