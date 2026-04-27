@@ -33,7 +33,13 @@ const Reservation = sequelize.define('Reservation', {
   message:      { type: DataTypes.TEXT,    allowNull: true }
 }, {
   tableName:  'reservations',
+<<<<<<< HEAD
   timestamps: true
+=======
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
+>>>>>>> 2e18c38848e12645d2e436016d19f9c58171ec7e
 });
 
 Reservation.belongsTo(User, {

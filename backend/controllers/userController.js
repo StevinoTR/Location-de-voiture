@@ -1,8 +1,11 @@
 const User       = require('../models/User');
 const Entreprise = require('../models/Entreprise');
 const Client     = require('../models/Client');
+<<<<<<< HEAD
 const Car        = require('../models/Car');
 const Reservation = require('../models/Reservation');
+=======
+>>>>>>> 2e18c38848e12645d2e436016d19f9c58171ec7e
 
 // GET /api/users
 exports.list = async (req, res, next) => {
@@ -14,12 +17,19 @@ exports.list = async (req, res, next) => {
       where,
       attributes: { exclude: ['password'] },
       include: [
+<<<<<<< HEAD
         { model: Entreprise, as: 'entreprise' },
         { model: Client,     as: 'client' },
         { model: Car,        as: 'voitures',    attributes: ['id'] },
         { model: Reservation, as: 'reservations', attributes: ['id'] }
       ],
       order: [['createdAt', 'DESC']]
+=======
+        { model: Client, as: 'client' },
+        { model: Entreprise, as: 'entreprise' }
+      ],
+      order: [['created_at', 'DESC']]
+>>>>>>> 2e18c38848e12645d2e436016d19f9c58171ec7e
     });
     return res.json(users);
   } catch (err) { next(err); }
