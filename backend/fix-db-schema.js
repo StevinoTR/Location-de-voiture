@@ -12,7 +12,8 @@ async function fixSchema() {
       port: DB_PORT || 3306,
       user: DB_USER,
       password: DB_PASSWORD,
-      database: DB_NAME
+      database: DB_NAME,
+      ssl: {}
     });
 
     console.log('✔ Connected.');
