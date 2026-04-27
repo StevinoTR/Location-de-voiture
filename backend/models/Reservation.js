@@ -19,7 +19,11 @@ const Reservation = sequelize.define('Reservation', {
     allowNull: true,
     field:     'client_id'
   },
+<<<<<<< HEAD
   reference:    { type: DataTypes.STRING,  unique: true,   allowNull: true },
+=======
+  reference:    { type: DataTypes.STRING,  unique: true,    allowNull: true },
+>>>>>>> 5c5205a (fix: modeles compatibles TiDB BIGINT)
   date_debut:   { type: DataTypes.DATEONLY, allowNull: false },
   date_fin:     { type: DataTypes.DATEONLY, allowNull: false },
   statut:       { type: DataTypes.STRING,  allowNull: false, defaultValue: 'en_attente' },

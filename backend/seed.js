@@ -8,8 +8,13 @@ async function seed() {
     await sequelize.authenticate();
     console.log('✅ Connexion BDD OK');
 
+<<<<<<< HEAD
     const email    = process.env.ADMIN_EMAIL    || 'admin@carrent.mg';
     const password = process.env.ADMIN_PASSWORD || 'Admin2026!';
+=======
+    const email    = 'admin@carrent.mg';
+    const password = 'Admin2026!';
+>>>>>>> 5c5205a (fix: modeles compatibles TiDB BIGINT)
 
     const existing = await User.findOne({ where: { email } });
     if (existing) {
