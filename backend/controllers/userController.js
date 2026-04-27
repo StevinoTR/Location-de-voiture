@@ -1,6 +1,8 @@
 const User       = require('../models/User');
 const Entreprise = require('../models/Entreprise');
 const Client     = require('../models/Client');
+const Car        = require('../models/Car');
+const Reservation = require('../models/Reservation');
 
 // GET /api/users
 exports.list = async (req, res, next) => {
@@ -11,6 +13,12 @@ exports.list = async (req, res, next) => {
     const users = await User.findAll({
       where,
       attributes: { exclude: ['password'] },
+      include: [
+        { model: Entreprise, as: 'entreprise' },
+        { model: Client,     as: 'client' },
+        { model: Car,        as: 'voitures',    attributes: ['id'] },
+        { model: Reservation, as: 'reservations', attributes: ['id'] }
+      ],
       order: [['createdAt', 'DESC']]
     });
     return res.json(users);
