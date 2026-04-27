@@ -5,7 +5,7 @@ const sequelizeOptions = {
   dialect: 'mysql',
   logging: false,
   dialectOptions: {
-    ssl: { rejectUnauthorized: true },
+    ssl: { rejectUnauthorized: false },
   },
   pool: {
     max: 5,
