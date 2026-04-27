@@ -4,6 +4,10 @@ const { Sequelize } = require('sequelize');
 const sequelizeOptions = {
   dialect: 'mysql',
   logging: false,
+  define: {
+    underscored: false,    // ← AJOUTÉ
+    freezeTableName: false
+  },
   dialectOptions: {
     ssl: { rejectUnauthorized: false },
   },
@@ -28,4 +32,4 @@ const sequelize = process.env.DATABASE_URL
       }
     );
 
-module.exports = sequelize
+module.exports = sequelize;
