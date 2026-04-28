@@ -22,7 +22,7 @@ exports.list = async (req, res, next) => {
           attributes: ['nom_entreprise', 'telephone']
         }]
       }],
-      order: [['created_at', 'DESC']]
+      order: [['id', 'DESC']]
     });
 
     return res.json(cars);

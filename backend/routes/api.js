@@ -41,8 +41,8 @@ router.get('/voitures/:id/photo', carCtrl.getPhoto);
 // Reservations
 router.post('/reservations', protect, resaCtrl.create);
 router.get('/reservations', protect, resaCtrl.list);
-router.get('/mes-reservations', protect, resaCtrl.myReservations);
-router.get('/client/reservations', protect, resaCtrl.myReservations);
+router.get('/mes-reservations', protect, resaCtrl.mesReservations);
+router.get('/client/reservations', protect, resaCtrl.mesReservations);
 router.put('/reservations/:id', protect, resaCtrl.update);
 router.put('/reservations/:id/confirm', protect, resaCtrl.confirm);
 router.put('/reservations/:id/refuse', protect, resaCtrl.refuse);

@@ -60,6 +60,9 @@ exports.list = async (req, res, next) => {
 
     if (req.user.role === 'entreprise') {
       const cars = await Car.findAll({ where: { entrepriseId: req.user.id }, attributes: ['id'] });
+      if (cars.length === 0) {
+        return res.json([]);
+      }
       where.voitureId = cars.map(c => c.id);
     }
 
@@ -69,7 +72,7 @@ exports.list = async (req, res, next) => {
         { model: Car,  as: 'voiture', attributes: ['id', 'marque', 'modele', 'photoUrl'] },
         { model: User, as: 'client',  attributes: ['id', 'prenom', 'nom', 'email'] }
       ],
-      order: [['created_at', 'DESC']]
+      order: [['id', 'DESC']]
     });
 
     return res.json(resas);
@@ -84,12 +87,13 @@ exports.mesReservations = async (req, res, next) => {
       include: [
         { model: Car, as: 'voiture', attributes: ['id', 'marque', 'modele', 'photoUrl', 'prix_jour'] }
       ],
-      order: [['created_at', 'DESC']]
+      order: [['id', 'DESC']]
     });
 
     return res.json(resas);
   } catch (err) { next(err); }
 };
+exports.myReservations = exports.mesReservations;
 
 // PUT /api/reservations/:id
 exports.update = async (req, res, next) => {
