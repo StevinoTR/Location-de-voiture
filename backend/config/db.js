@@ -5,17 +5,19 @@ const sequelizeOptions = {
   dialect: 'mysql',
   logging: false,
   define: {
-    underscored: false,    // ← AJOUTÉ
-    freezeTableName: false
+    underscored:     false,
+    freezeTableName: false,
+    createdAt:       'createdAt',
+    updatedAt:       'updatedAt'
   },
   dialectOptions: {
     ssl: { rejectUnauthorized: false },
   },
   pool: {
-    max: 5,
-    min: 0,
+    max:     5,
+    min:     0,
     acquire: 60000,
-    idle: 10000,
+    idle:    10000,
   }
 };
 
