@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/',              resaCtrl.create);
 router.get('/',   protect, authorize('entreprise','admin'), resaCtrl.list);
 router.get('/mes-reservations', protect, resaCtrl.mesReservations);
+router.get('/client/reservations', protect, resaCtrl.mesReservations);
 router.put('/:id',            protect, resaCtrl.update);
 router.put('/:id/confirm',    protect, authorize('entreprise','admin'), resaCtrl.confirm);
 router.put('/:id/refuse',     protect, authorize('entreprise','admin'), resaCtrl.refuse);
