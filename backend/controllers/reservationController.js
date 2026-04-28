@@ -2,6 +2,7 @@ const Reservation = require('../models/Reservation');
 const Car         = require('../models/Car');
 const User        = require('../models/User');
 const Client      = require('../models/Client');
+const Entreprise  = require('../models/Entreprise');
 
 const generateRef = () =>
   'R' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000);
@@ -71,7 +72,8 @@ exports.list = async (req, res, next) => {
       attributes: ['id', 'reference', 'date_debut', 'date_fin', 'statut', 'montant', 'nom_client', 'email_client', 'tel_client'],
       include: [
         { model: Car,  as: 'voiture', attributes: ['id', 'marque', 'modele', 'photoUrl'],
-          include: [{ model: User, as: 'entreprise', attributes: ['id', 'prenom', 'nom', 'nom_entreprise'] }] },
+          include: [{ model: User, as: 'entreprise', attributes: ['id', 'prenom', 'nom'],
+            include: [{ model: Entreprise, as: 'entreprise', attributes: ['nom_entreprise'] }] }] },
         { model: User, as: 'client',  attributes: ['id', 'prenom', 'nom', 'email'] }
       ],
       order: [['id', 'DESC']]
