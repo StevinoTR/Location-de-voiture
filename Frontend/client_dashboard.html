@@ -142,6 +142,21 @@
     .status-annulee { background: var(--red-lt); color: var(--red); }
     .status-terminee { background: var(--g200); color: var(--g600); }
 
+    .alert-box {
+      display: none;
+      align-items: center;
+      gap: .75rem;
+      padding: 1rem 1.2rem;
+      margin: 0 2rem 1rem;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: .95rem;
+    }
+    .alert-box strong { font-weight: 700; }
+    .alert-box.info { background: #eff6ff; border: 1px solid #93c5fd; color: #1d4ed8; }
+    .alert-box.success { background: #ecfdf5; border: 1px solid #6ee7b7; color: #065f46; }
+    .alert-box.error { background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; }
+
     .empty-state { text-align: center; padding: 4rem 2rem; color: var(--g500); }
     .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--dark); }
     
@@ -203,6 +218,7 @@
         <div class="table-header">
           <h2>Mes Réservations</h2>
         </div>
+        <div id="reservationAlert" class="alert-box"></div>
         <div class="table-responsive">
           <table>
             <thead>
@@ -292,7 +308,33 @@
       }
     };
 
+    const showReservationAlert = (reservations) => {
+      const alertBox = document.getElementById('reservationAlert');
+      if (!alertBox) return;
+
+      if (!reservations || reservations.length === 0) {
+        alertBox.style.display = 'none';
+        return;
+      }
+
+      const confirmed = reservations.some(r => r.statut === 'confirmee');
+      const cancelled = reservations.some(r => r.statut === 'annulee');
+      if (!confirmed && !cancelled) {
+        alertBox.style.display = 'none';
+        return;
+      }
+
+      const messages = [];
+      if (confirmed) messages.push('✅ Une réservation a été confirmée.');
+      if (cancelled) messages.push('❌ Une réservation a été annulée.');
+
+      alertBox.textContent = messages.join(' ');
+      alertBox.className = `alert-box ${cancelled && !confirmed ? 'error' : confirmed && !cancelled ? 'success' : 'info'}`;
+      alertBox.style.display = 'flex';
+    };
+
     const renderReservations = (reservations) => {
+      showReservationAlert(reservations);
       const tbody = document.getElementById('resaBody');
       if (!reservations || reservations.length === 0) {
         tbody.innerHTML = `
