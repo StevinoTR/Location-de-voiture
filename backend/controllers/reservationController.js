@@ -68,12 +68,24 @@ exports.list = async (req, res, next) => {
 
     const resas = await Reservation.findAll({
       where,
+      attributes: ['id', 'reference', 'date_debut', 'date_fin', 'statut', 'montant', 'nom_client', 'email_client', 'tel_client'],
       include: [
-        { model: Car,  as: 'voiture', attributes: ['id', 'marque', 'modele', 'photoUrl'] },
+        { model: Car,  as: 'voiture', attributes: ['id', 'marque', 'modele', 'photoUrl'],
+          include: [{ model: User, as: 'entreprise', attributes: ['id', 'prenom', 'nom', 'nom_entreprise'] }] },
         { model: User, as: 'client',  attributes: ['id', 'prenom', 'nom', 'email'] }
       ],
       order: [['id', 'DESC']]
     });
+
+    // Populate nom_client from client data if missing
+    for (const resa of resas) {
+      if (!resa.nom_client && resa.client) {
+        resa.nom_client = `${resa.client.prenom} ${resa.client.nom}`;
+        resa.email_client = resa.client.email;
+        // Optionally save to database
+        await resa.save();
+      }
+    }
 
     return res.json(resas);
   } catch (err) { next(err); }
