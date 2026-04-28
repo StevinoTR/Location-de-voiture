@@ -35,4 +35,4 @@ async function fixReservations() {
   }
 }
 
-fixReservations()
+fixReservations();
