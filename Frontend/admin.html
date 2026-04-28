@@ -179,6 +179,15 @@
 
     .tb-right { display:flex; align-items:center; gap:.85rem; }
 
+    .menu-btn {
+      width: 42px; height: 42px; border: none; border-radius: 12px;
+      background: var(--g100); color: var(--dark); font-size: 1.15rem;
+      display: none; align-items: center; justify-content: center;
+      cursor: pointer; transition: background .2s;
+    }
+
+    .menu-btn:hover { background: var(--g200); }
+
     .tb-date {
       font-size: .78rem; color: var(--g500); font-weight: 500;
       background: var(--g100); padding: .4rem .9rem; border-radius: 8px;
@@ -402,7 +411,13 @@
        RESPONSIVE
     ══════════════════════════════════════ */
     @media(max-width:1200px){ .stats{grid-template-columns:repeat(2,1fr);} .grid2{grid-template-columns:1fr;} }
-    @media(max-width:900px) { .main{margin-left:0;} .sidebar{transform:translateX(-100%);} .sidebar.open{transform:none;} }
+    @media(max-width:900px) {
+      .main{margin-left:0;}
+      .sidebar{transform:translateX(-100%);}
+      .sidebar.open{transform:none;}
+      .menu-btn{display:flex;}
+      .tb-right { gap:.65rem; }
+    }
     @media(max-width:600px) { .stats{grid-template-columns:1fr;} .content{padding:1rem;} }
 
   </style>
@@ -492,6 +507,7 @@
 
     <!-- Topbar -->
     <div class="topbar">
+      <button type="button" class="menu-btn" id="menuBtn" aria-label="Ouvrir le menu">☰</button>
       <div class="tb-left">
         <h1 id="page-title">Vue d'ensemble</h1>
         <p id="page-sub">Bienvenue, Administrateur 👋</p>
@@ -867,6 +883,22 @@
     }
 
     setDate();
+
+    const sidebar = document.getElementById('sidebar');
+    const menuBtn = document.getElementById('menuBtn');
+
+    const toggleSidebar = () => {
+      if (!sidebar) return;
+      sidebar.classList.toggle('open');
+    };
+
+    const closeSidebar = () => {
+      if (!sidebar) return;
+      if (window.innerWidth <= 900) sidebar.classList.remove('open');
+    };
+
+    if (menuBtn) menuBtn.addEventListener('click', toggleSidebar);
+    window.addEventListener('resize', closeSidebar);
 
     /* ── Admin data rendering ───────────────────── */
     const setStats = ({ entreprises, clients, voitures, reservations }) => {
