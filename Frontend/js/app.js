@@ -1,5 +1,27 @@
-// API Base URL - Dynamically set to the current origin for flexibility
-const API_BASE = 'https://fiarako.onrender.com';
+// API Base URL - use current origin when running locally, otherwise fallback to remote host
+const API_BASE = window.location.origin && window.location.origin !== 'null'
+  ? window.location.origin
+  : 'https://fiarako.onrender.com';
+
+const normalizePhotoUrl = (url) => {
+  if (!url) return '';
+  if (/^https?:\/\//.test(url)) return url;
+  if (url.startsWith('/')) return `${API_BASE}${url}`;
+  return `${API_BASE}/${url}`;
+};
+
+const normalizeCar = (car) => {
+  if (!car || typeof car !== 'object') return car;
+  return {
+    ...car,
+    photoUrl: normalizePhotoUrl(car.photoUrl),
+  };
+};
+
+const normalizeReservation = (resa) => {
+  if (!resa || typeof resa !== 'object') return resa;
+  return resa.voiture ? { ...resa, voiture: normalizeCar(resa.voiture) } : resa;
+};
 
 let storedUser = null;
 try {
@@ -83,7 +105,8 @@ const logout = () => {
 // --- VOITURES ---
 const fetchVoitures = async (filters = {}) => {
   const qs = new URLSearchParams(filters).toString();
-  return apiFetch(`/voitures${qs ? `?${qs}` : ''}`);
+  const cars = await apiFetch(`/voitures${qs ? `?${qs}` : ''}`);
+  return Array.isArray(cars) ? cars.map(normalizeCar) : normalizeCar(cars);
 };
 
 const createVoiture = async (payload) => {
@@ -119,7 +142,9 @@ const uploadVoiturePhoto = async (id, file) => {
     const error = await res.json().catch(() => ({}));
     throw new Error(error.message || 'Erreur upload');
   }
-  return res.json();
+
+  const data = await res.json();
+  return { ...data, photoUrl: normalizePhotoUrl(data.photoUrl) };
 };
 
 // --- RESERVATIONS ---
@@ -130,8 +155,15 @@ const createReservation = async (payload) => {
   });
 };
 
-const fetchMesReservations = async () => apiFetch('/mes-reservations');
-const fetchReservations = async () => apiFetch('/reservations');
+const fetchMesReservations = async () => {
+  const list = await apiFetch('/mes-reservations');
+  return Array.isArray(list) ? list.map(normalizeReservation) : normalizeReservation(list);
+};
+
+const fetchReservations = async () => {
+  const list = await apiFetch('/reservations');
+  return Array.isArray(list) ? list.map(normalizeReservation) : normalizeReservation(list);
+};
 
 const updateReservation = async (id, payload) => {
   return apiFetch(`/reservations/${id}`, {
