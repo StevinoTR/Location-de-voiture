@@ -5,19 +5,33 @@ const fixTimestampColumns = async () => {
     await sequelize.authenticate();
     console.log('📊 Connexion à la base de données réussie');
 
-    // Renommer createdat en created_at
-    await sequelize.query(`
-      ALTER TABLE voitures 
-      CHANGE COLUMN createdat created_at TIMESTAMP NULL DEFAULT NULL
-    `);
-    console.log('✅ Colonne "createdat" renommée en "created_at"');
+    const tableName = 'voitures';
+    const queryInterface = sequelize.getQueryInterface();
+    const columns = await queryInterface.describeTable(tableName);
 
-    // Renommer updatedat en updated_at
-    await sequelize.query(`
-      ALTER TABLE voitures 
-      CHANGE COLUMN updatedat updated_at TIMESTAMP NULL DEFAULT NULL
-    `);
-    console.log('✅ Colonne "updatedat" renommée en "updated_at"');
+    if (columns.createdat && !columns.created_at) {
+      await sequelize.query(`
+        ALTER TABLE ${tableName}
+        CHANGE COLUMN createdat created_at TIMESTAMP NULL DEFAULT NULL
+      `);
+      console.log('✅ Colonne "createdat" renommée en "created_at"');
+    } else if (columns.created_at) {
+      console.log('ℹ️  La colonne "created_at" existe déjà, aucune action nécessaire');
+    } else {
+      console.log('⚠️  Aucune colonne "createdat" trouvée à renommer');
+    }
+
+    if (columns.updatedat && !columns.updated_at) {
+      await sequelize.query(`
+        ALTER TABLE ${tableName}
+        CHANGE COLUMN updatedat updated_at TIMESTAMP NULL DEFAULT NULL
+      `);
+      console.log('✅ Colonne "updatedat" renommée en "updated_at"');
+    } else if (columns.updated_at) {
+      console.log('ℹ️  La colonne "updated_at" existe déjà, aucune action nécessaire');
+    } else {
+      console.log('⚠️  Aucune colonne "updatedat" trouvée à renommer');
+    }
 
     console.log('\n✅ Colonnes timestamp corrigées avec succès');
     process.exit(0);
