@@ -18,15 +18,28 @@ async function fixSchema() {
 
     console.log('✔ Connected.');
 
-    // Check if 'blocked' column exists in 'users' table
-    const [columns] = await connection.query(`SHOW COLUMNS FROM users LIKE 'blocked'`);
-
-    if (columns.length === 0) {
-      console.log('Column "blocked" is missing. Adding it...');
-      await connection.query(`ALTER TABLE users ADD COLUMN blocked TINYINT(1) NOT NULL DEFAULT 0`);
-      console.log('✔ Column "blocked" added successfully.');
-    } else {
-      console.log('✔ Column "blocked" already exists.');
+    // Check and add missing columns in 'users' table
+    const columnsToCheck = ['blocked', 'created_at', 'updated_at'];
+    
+    for (const colName of columnsToCheck) {
+      const [columns] = await connection.query(`SHOW COLUMNS FROM users LIKE ?`, [colName]);
+      
+      if (columns.length === 0) {
+        let alterSQL;
+        if (colName === 'blocked') {
+          alterSQL = `ALTER TABLE users ADD COLUMN blocked TINYINT(1) NOT NULL DEFAULT 0`;
+        } else if (colName === 'created_at') {
+          alterSQL = `ALTER TABLE users ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
+        } else if (colName === 'updated_at') {
+          alterSQL = `ALTER TABLE users ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`;
+        }
+        
+        console.log(`Column "${colName}" is missing. Adding it...`);
+        await connection.query(alterSQL);
+        console.log(`✔ Column "${colName}" added successfully.`);
+      } else {
+        console.log(`✔ Column "${colName}" already exists.`);
+      }
     }
 
     await connection.end();
