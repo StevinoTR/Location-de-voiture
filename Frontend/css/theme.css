@@ -1,0 +1,131 @@
+:root {
+  --theme-bg: #f7f8fc;
+  --theme-surface: #ffffff;
+  --theme-surface-alt: #f1f5f9;
+  --theme-panel: #ffffff;
+  --theme-border: #e2e8f0;
+  --theme-text: #0d1b2a;
+  --theme-muted: #475569;
+  --theme-link: #1d4ed8;
+  --theme-button-bg: #1d4ed8;
+  --theme-button-text: #ffffff;
+  --theme-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark {
+  --theme-bg: #060c1a;
+  --theme-surface: #0f172a;
+  --theme-surface-alt: #111827;
+  --theme-panel: #111827;
+  --theme-border: #334155;
+  --theme-text: #e2e8f0;
+  --theme-muted: #94a3b8;
+  --theme-link: #93c5fd;
+  --theme-button-bg: #6366f1;
+  --theme-button-text: #ffffff;
+  --theme-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+}
+
+body {
+  background: var(--theme-bg) !important;
+  color: var(--theme-text) !important;
+}
+
+body, .page, .card, .topbar, .navbar, .sidebar, .section, .content, .stats, .table, .modal, .search-section, .reservation-card, .form-card, .hero, .page-hero {
+  background: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+  border-color: var(--theme-border) !important;
+}
+
+html.dark body, html.dark .page, html.dark .card, html.dark .topbar, html.dark .navbar, html.dark .sidebar, html.dark .section, html.dark .content, html.dark .stats, html.dark .table, html.dark .modal, html.dark .search-section, html.dark .reservation-card, html.dark .form-card, html.dark .hero, html.dark .page-hero {
+  background: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+}
+
+html.dark .navbar,
+html.dark .topbar,
+html.dark .sidebar,
+html.dark .page-hero,
+html.dark .hero {
+  background: #0b1220 !important;
+  border-color: #1f2a44 !important;
+}
+
+html.dark a,
+html.dark .btn-ghost,
+html.dark .nav-links a,
+html.dark .back,
+html.dark .logo-name,
+html.dark .sb-logo-text,
+html.dark .sb-admin-name,
+html.dark .user-name,
+html.dark .admin-chip,
+html.dark .page-hero h1,
+html.dark .card-head h1,
+html.dark .eyebrow,
+html.dark .badge,
+html.dark .chip {
+  color: var(--theme-text) !important;
+}
+
+html.dark a:hover,
+html.dark .nav-links a:hover,
+html.dark .nav-links a.active {
+  color: var(--theme-link) !important;
+}
+
+html.dark .btn-ghost {
+  color: var(--theme-text) !important;
+  background: rgba(148, 163, 184, 0.12) !important;
+  border-color: var(--theme-border) !important;
+}
+
+html.dark .btn-solid,
+html.dark .btn-add,
+html.dark .btn-submit,
+html.dark .btn-primary,
+html.dark .btn-nav-primary {
+  background: linear-gradient(135deg, #6366f1, #4338ca) !important;
+  color: var(--theme-button-text) !important;
+}
+
+html.dark input,
+html.dark textarea,
+html.dark select,
+html.dark .form-control,
+html.dark .fields input,
+html.dark .fields textarea,
+html.dark .field,
+html.dark .search-input,
+html.dark .data-table,
+html.dark table {
+  background: #111827 !important;
+  color: var(--theme-text) !important;
+  border-color: var(--theme-border) !important;
+}
+
+.theme-toggle {
+  font-size: 1rem;
+  border: 1px solid var(--theme-border);
+  background: transparent;
+  color: var(--theme-text);
+  padding: 0.6rem 0.85rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform .2s ease, background .2s ease, color .2s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-1px);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+html.dark .theme-toggle {
+  border-color: #475569;
+  background: rgba(99, 102, 241, 0.12);
+  color: #e2e8f0;
+}

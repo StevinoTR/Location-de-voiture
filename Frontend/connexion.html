@@ -286,6 +286,7 @@
     }
 
   </style>
+  <link rel="stylesheet" href="./css/theme.css">
 </head>
 <body>
 
@@ -303,7 +304,10 @@
       </div>
       <span class="logo-name">Car<span>Rent</span></span>
     </a>
-    <a href="index.html" class="back">Retour au site</a>
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+      <a href="index.html" class="back">Retour au site</a>
+      <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Basculer mode sombre">🌙</button>
+    </div>
   </div>
 
 
@@ -379,6 +383,7 @@
   </div>
 
 
+  <script src="./js/theme.js"></script>
   <script type="module">
     import { login } from './js/app.js';
 

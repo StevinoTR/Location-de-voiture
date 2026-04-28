@@ -421,6 +421,7 @@
     @media(max-width:600px) { .stats{grid-template-columns:1fr;} .content{padding:1rem;} }
 
   </style>
+  <link rel="stylesheet" href="./css/theme.css">
 </head>
 <body>
 
@@ -515,6 +516,7 @@
       <div class="tb-right">
         <span class="tb-date" id="dateNow"></span>
         <button class="notif">🔔<span class="notif-dot"></span></button>
+        <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Basculer mode sombre">🌙</button>
         <div class="admin-chip">
           <div class="admin-ava">AD</div>
           <span>Admin</span>
@@ -845,6 +847,7 @@
   </div>
 
 
+  <script src="./js/theme.js"></script>
   <script type="module">
     import { store, logout, fetchUsers, fetchVoitures, fetchReservations, deleteUser, toggleBlockUser, updateReservation, removeVoiture } from './js/app.js';
 

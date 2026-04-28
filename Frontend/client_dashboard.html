@@ -167,6 +167,7 @@
     footer p { font-size: .82rem; color: rgba(255,255,255,.35); }
 
   </style>
+  <link rel="stylesheet" href="./css/theme.css">
 </head>
 <body>
 
@@ -194,6 +195,7 @@
 
         <div class="nav-actions">
           <button onclick="logout()" class="btn-ghost">Déconnexion</button>
+          <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Basculer mode sombre">🌙</button>
         </div>
       </div>
     </div>
@@ -383,5 +385,6 @@
 
     fetchReservations();
   </script>
+  <script src="./js/theme.js"></script>
 </body>
 </html>
