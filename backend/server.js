@@ -70,19 +70,19 @@ app.use((err, req, res, next) => {
 
 // Démarrage
 const start = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('✔ Connexion à la base de données réussie.');
+  const port = parseInt(process.env.PORT) || 5000;
+  app.listen(port, async () => {
+    console.log(`🚀 Serveur démarré sur : http://localhost:${port}`);
+    console.log(`📡 API Base : http://localhost:${port}/api`);
 
-    const port = parseInt(process.env.PORT) || 5000;
-    app.listen(port, () => {
-      console.log(`🚀 Serveur démarré sur : http://localhost:${port}`);
-      console.log(`📡 API Base : http://localhost:${port}/api`);
-    });
-  } catch (err) {
-    console.error('❌ Impossible de démarrer :', err.message);
-    process.exit(1);
-  }
+    try {
+      await sequelize.authenticate();
+      console.log('✔ Connexion à la base de données réussie.');
+    } catch (err) {
+      console.error('❌ Connexion DB échouée :', err.message);
+      // Ne pas quitter, pour que Render détecte le port
+    }
+  });
 };
 
 start();

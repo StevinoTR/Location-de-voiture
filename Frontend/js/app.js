@@ -184,9 +184,7 @@ const terminateReservation = async (id) => {
   return apiFetch(`/reservations/${id}/terminate`, { method: 'PUT' });
 };
 
-const cancelReservation = async (id) => {
-  return apiFetch(`/reservations/${id}/cancel`, { method: 'PUT' });
-};
+// --- USERS & ENTREPRISES ---
 const fetchUsers = async (role) => {
   const qs = new URLSearchParams(role ? { role } : {}).toString();
   return apiFetch(`/users${qs ? `?${qs}` : ''}`);
