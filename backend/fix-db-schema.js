@@ -2,20 +2,22 @@ require('dotenv').config();
 const mysql = require('mysql2/promise');
 
 async function fixSchema() {
-  const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
-  
-  console.log(`Connecting to database ${DB_NAME} on ${DB_HOST}...`);
-  
+  const databaseUrl = process.env.DATABASE_URL;
+
+  if (!databaseUrl) {
+    console.error('❌ DATABASE_URL not found in environment variables');
+    process.exit(1);
+  }
+
+  console.log('Connecting to database...');
+
   try {
     const connection = await mysql.createConnection({
-      host: DB_HOST,
-      port: DB_PORT || 3306,
-      user: DB_USER,
-      password: DB_PASSWORD,
-      database: DB_NAME,
-      ssl: {}
+      uri: databaseUrl,
+      ssl: {
+        rejectUnauthorized: false
+      }
     });
-
     console.log('✔ Connected.');
 
     // Tables et leurs colonnes manquantes
@@ -31,10 +33,10 @@ async function fixSchema() {
     for (const table of tables) {
       console.log(`\nChecking table: ${table}`);
       const columns = columnsToCheck[table];
-      
+
       for (const colName of columns) {
         const [existing] = await connection.query(`SHOW COLUMNS FROM ${table} LIKE ?`, [colName]);
-        
+
         if (existing.length === 0) {
           let alterSQL;
           if (colName === 'blocked') {
@@ -44,7 +46,7 @@ async function fixSchema() {
           } else if (colName === 'updated_at') {
             alterSQL = `ALTER TABLE ${table} ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`;
           }
-          
+
           console.log(`  Column "${colName}" is missing. Adding it...`);
           await connection.query(alterSQL);
           console.log(`  ✔ Column "${colName}" added successfully.`);
@@ -55,7 +57,8 @@ async function fixSchema() {
     }
 
     await connection.end();
-    console.log('Done.');
+    console.log('\n✅ Schema fixed successfully!');
+    process.exit(0);
   } catch (err) {
     console.error('❌ Failed to fix schema:', err.message);
     process.exit(1);
