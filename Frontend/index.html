@@ -1235,7 +1235,7 @@
       const html = cars.slice(0, 6).map(car => `
         <div class="car-card reveal">
           <div class="car-photo">
-            ${car.photoUrl ? `<img src="/api/voitures/${car.id}/photo" alt="${car.marque} ${car.modele}" onerror="this.style.display='none'" />` : '<div class="car-photo-placeholder"><div class="ico">🚗</div><div class="fname">Photo bientôt</div><small>Voiture en attente</small></div>'}
+            ${car.photoUrl ? `<img src="${car.photoUrl}" alt="${car.marque} ${car.modele}" onerror="this.style.display='none'" />` : '<div class="car-photo-placeholder"><div class="ico">🚗</div><div class="fname">Photo bientôt</div><small>Voiture en attente</small></div>'}
             <div class="car-price">${formatAr(car.prix_jour)}<small> Ar/j</small></div>
           </div>
           <div class="car-body">

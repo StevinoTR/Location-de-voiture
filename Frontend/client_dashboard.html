@@ -317,7 +317,7 @@
             <td><strong>${r.reference || '#'+r.id}</strong></td>
             <td>
               <div class="car-info">
-                <img class="car-img" src="/api/voitures/${voiture.id}/photo" alt="Voiture" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2240%22%3E%3Crect width=%2260%22 height=%2240%22 fill=%22%23eef3ff%22/%3E%3C/svg%3E'">
+                <img class="car-img" src="${voiture.photoUrl || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2240%22%3E%3Crect width=%2260%22 height=%2240%22 fill=%22%23eef3ff%22/%3E%3C/svg%3E'}" alt="Voiture" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2240%22%3E%3Crect width=%2260%22 height=%2240%22 fill=%22%23eef3ff%22/%3E%3C/svg%3E'">
                 <div class="car-details">
                   <h4>${voiture.modele || 'Inconnu'}</h4>
                   <span>${voiture.marque || ''}</span>

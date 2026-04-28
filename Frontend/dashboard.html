@@ -1362,7 +1362,7 @@
       const html = voitures.slice(0, 4).map(v => `
         <div class="car-row">
           <div class="car-thumb">
-            ${v.photoUrl ? `<img src="/api/voitures/${v.id}/photo" alt="${v.marque}" onerror="this.style.display='none'" />` : '🚗'}
+            ${v.photoUrl ? `<img src="${v.photoUrl}" alt="${v.marque}" onerror="this.style.display='none'" />` : '🚗'}
           </div>
           <div class="car-info">
             <div class="car-name">${v.marque} ${v.modele}</div>
@@ -1439,7 +1439,7 @@
       }
 
       tbody.innerHTML = voitures.map((v) => {
-        const photo = v.photoUrl ? `<img src="/api/voitures/${v.id}/photo" alt="${v.marque} ${v.modele}" onerror="this.style.display='none'" />` : '🚗';
+        const photo = v.photoUrl ? `<img src="${v.photoUrl}" alt="${v.marque} ${v.modele}" onerror="this.style.display='none'" />` : '🚗';
         const activeResas = (v.reservations || []).filter(r => r.statut !== 'annulee' && r.statut !== 'terminee');
         const sortedResas = activeResas.sort((a, b) => new Date(a.date_debut) - new Date(b.date_debut));
         const nextResa = sortedResas.length ? sortedResas[0] : null;

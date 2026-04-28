@@ -603,7 +603,7 @@
         <div class="car-card" style="animation-delay:${i * .07}s">
 
           <div class="car-photo">
-            <img src="${v.photoUrl ? `/api/voitures/${v.id}/photo` : ''}" alt="${v.marque} ${v.modele}"
+            <img src="${v.photoUrl || ''}" alt="${v.marque} ${v.modele}"
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
             <div class="car-no-img" style="display:none">
               <div class="ico">🚗</div>
