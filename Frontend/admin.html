@@ -929,7 +929,7 @@
       }
 
       const items = reservations.slice(0, 4).map((r) => {
-        const client = r.client ? `${r.client.prenom} ${r.client.nom}` : 'Client inconnu';
+        const client = r.client ? `${r.client.prenom} ${r.client.nom}` : (r.nom_client || 'Client inconnu');
         const car = r.voiture ? `${r.voiture.marque} ${r.voiture.modele}` : 'Voiture inconnue';
         const company = r.voiture?.entreprise ? r.voiture.entreprise.nom_entreprise || `${r.voiture.entreprise.prenom} ${r.voiture.entreprise.nom}` : 'Entreprise inconnue';
         const dates = `${new Date(r.date_debut).toLocaleDateString('fr-FR')} → ${new Date(r.date_fin).toLocaleDateString('fr-FR')}`;
@@ -966,7 +966,7 @@
       }
 
       tbody.innerHTML = reservations.map((r, i) => {
-        const client = r.client ? `${r.client.prenom} ${r.client.nom}` : 'Client inconnu';
+        const client = r.client ? `${r.client.prenom} ${r.client.nom}` : (r.nom_client || 'Client inconnu');
         const car = r.voiture ? `${r.voiture.marque} ${r.voiture.modele}` : 'Voiture inconnue';
         const owner = r.voiture?.entreprise ? (r.voiture.entreprise.nom_entreprise || `${r.voiture.entreprise.prenom} ${r.voiture.entreprise.nom}`) : 'Entreprise inconnue';
         const dates = `${new Date(r.date_debut).toLocaleDateString('fr-FR')} → ${new Date(r.date_fin).toLocaleDateString('fr-FR')}`;

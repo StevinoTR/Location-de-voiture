@@ -918,7 +918,11 @@
         await createReservation({
           voitureId: currentCar.id,
           date_debut: debut,
-          date_fin: fin
+          date_fin: fin,
+          nom_client: store.user.prenom + ' ' + store.user.nom,
+          email_client: store.user.email,
+          tel_client: tel,
+          cin_client: cin
         });
 
         setStep(3);
