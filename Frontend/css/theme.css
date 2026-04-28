@@ -38,46 +38,50 @@
 
 html.dark {
   color-scheme: dark;
-  --theme-bg: #060c1a;
-  --theme-surface: #0f172a;
-  --theme-surface-alt: #111827;
-  --theme-panel: #111827;
-  --theme-border: #334155;
-  --theme-text: #e2e8f0;
-  --theme-muted: #94a3b8;
-  --theme-link: #93c5fd;
-  --theme-button-bg: #6366f1;
+  --theme-bg: #0a0e1a;
+  --theme-surface: #1a1d2e;
+  --theme-surface-alt: #1e2133;
+  --theme-panel: #1e2133;
+  --theme-border: #2a2d3a;
+  --theme-text: #f1f5f9;
+  --theme-muted: #a1a5b8;
+  --theme-link: #60a5fa;
+  --theme-button-bg: #3b82f6;
   --theme-button-text: #ffffff;
-  --theme-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+  --theme-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
 
-  --bg: #060c1a;
-  --dark: #e2e8f0;
-  --white: #f8fafc;
-  --g50: #111827;
-  --g100: #111827;
-  --g200: #1f2937;
-  --g400: #94a3b8;
+  --bg: #0a0e1a;
+  --dark: #f1f5f9;
+  --white: #ffffff;
+  --g50: #1a1d2e;
+  --g100: #1e2133;
+  --g200: #2a2d3a;
+  --g400: #a1a5b8;
   --g500: #cbd5e1;
   --g600: #e2e8f0;
   --g700: #f8fafc;
-  --sidebar: #0b1220;
-  --sidebar-bg: #0b1220;
-  --blue: #93c5fd;
-  --blue-mid: #60a5fa;
+  --sidebar: #0f1419;
+  --sidebar-bg: #0f1419;
+  --blue: #60a5fa;
+  --blue-mid: #3b82f6;
   --blue-lt: #1e3a8a;
   --orange: #fb923c;
-  --orange-lt: #f97316;
+  --orange-lt: #ea580c;
   --green: #4ade80;
-  --green-lt: #2dd4bf;
+  --green-lt: #22c55e;
   --red: #f87171;
-  --red-lt: #fecaca;
+  --red-lt: #ef4444;
   --yellow: #facc15;
-  --yellow-lt: #fde68a;
+  --yellow-lt: #eab308;
 }
 
 body {
   background: var(--theme-bg) !important;
   color: var(--theme-text) !important;
+}
+
+html.dark body {
+  background: linear-gradient(180deg, #0a0e1a 0%, #0f1419 100%) !important;
 }
 
 body, .page, .card, .topbar, .navbar, .sidebar, .section, .content, .stats, .table, .modal, .search-section, .reservation-card, .form-card, .hero, .page-hero {
@@ -91,8 +95,16 @@ html.dark .topbar,
 html.dark .sidebar,
 html.dark .page-hero,
 html.dark .hero {
-  background: #0b1220 !important;
-  border-color: #1f2a44 !important;
+  background: linear-gradient(135deg, #0f1419, #1a1d2e) !important;
+  border-color: #2a2d3a !important;
+}
+
+html.dark .card,
+html.dark .page,
+html.dark .modal,
+html.dark .stats {
+  background: linear-gradient(145deg, #1e2133, #1a1d2e) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
 }
 
 html.dark a,
@@ -152,8 +164,9 @@ html.dark .btn-add,
 html.dark .btn-submit,
 html.dark .btn-primary,
 html.dark .btn-nav-primary {
-  background: linear-gradient(135deg, #6366f1, #4338ca) !important;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
   color: var(--theme-button-text) !important;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4) !important;
 }
 
 html.dark input,
