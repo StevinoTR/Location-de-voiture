@@ -18,27 +18,39 @@ async function fixSchema() {
 
     console.log('✔ Connected.');
 
-    // Check and add missing columns in 'users' table
-    const columnsToCheck = ['blocked', 'created_at', 'updated_at'];
-    
-    for (const colName of columnsToCheck) {
-      const [columns] = await connection.query(`SHOW COLUMNS FROM users LIKE ?`, [colName]);
+    // Tables et leurs colonnes manquantes
+    const tables = ['users', 'voitures', 'reservations', 'clients', 'entreprises'];
+    const columnsToCheck = {
+      'users': ['blocked', 'created_at', 'updated_at'],
+      'voitures': ['created_at', 'updated_at'],
+      'reservations': ['created_at', 'updated_at'],
+      'clients': ['created_at', 'updated_at'],
+      'entreprises': ['created_at', 'updated_at']
+    };
+
+    for (const table of tables) {
+      console.log(`\nChecking table: ${table}`);
+      const columns = columnsToCheck[table];
       
-      if (columns.length === 0) {
-        let alterSQL;
-        if (colName === 'blocked') {
-          alterSQL = `ALTER TABLE users ADD COLUMN blocked TINYINT(1) NOT NULL DEFAULT 0`;
-        } else if (colName === 'created_at') {
-          alterSQL = `ALTER TABLE users ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
-        } else if (colName === 'updated_at') {
-          alterSQL = `ALTER TABLE users ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`;
-        }
+      for (const colName of columns) {
+        const [existing] = await connection.query(`SHOW COLUMNS FROM ${table} LIKE ?`, [colName]);
         
-        console.log(`Column "${colName}" is missing. Adding it...`);
-        await connection.query(alterSQL);
-        console.log(`✔ Column "${colName}" added successfully.`);
-      } else {
-        console.log(`✔ Column "${colName}" already exists.`);
+        if (existing.length === 0) {
+          let alterSQL;
+          if (colName === 'blocked') {
+            alterSQL = `ALTER TABLE ${table} ADD COLUMN blocked TINYINT(1) NOT NULL DEFAULT 0`;
+          } else if (colName === 'created_at') {
+            alterSQL = `ALTER TABLE ${table} ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`;
+          } else if (colName === 'updated_at') {
+            alterSQL = `ALTER TABLE ${table} ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`;
+          }
+          
+          console.log(`  Column "${colName}" is missing. Adding it...`);
+          await connection.query(alterSQL);
+          console.log(`  ✔ Column "${colName}" added successfully.`);
+        } else {
+          console.log(`  ✔ Column "${colName}" already exists.`);
+        }
       }
     }
 

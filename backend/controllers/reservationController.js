@@ -69,7 +69,7 @@ exports.list = async (req, res, next) => {
         { model: Car,  as: 'voiture', attributes: ['id', 'marque', 'modele', 'photoUrl'] },
         { model: User, as: 'client',  attributes: ['id', 'prenom', 'nom', 'email'] }
       ],
-      order: [['createdAt', 'DESC']]
+      order: [['created_at', 'DESC']]
     });
 
     return res.json(resas);
@@ -84,7 +84,7 @@ exports.mesReservations = async (req, res, next) => {
       include: [
         { model: Car, as: 'voiture', attributes: ['id', 'marque', 'modele', 'photoUrl', 'prix_jour'] }
       ],
-      order: [['createdAt', 'DESC']]
+      order: [['created_at', 'DESC']]
     });
 
     return res.json(resas);

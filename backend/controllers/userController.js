@@ -19,7 +19,7 @@ exports.list = async (req, res, next) => {
         { model: Car,        as: 'voitures',    attributes: ['id'] },
         { model: Reservation, as: 'reservations', attributes: ['id'] }
       ],
-      order: [['createdAt', 'DESC']]
+      order: [['created_at', 'DESC']]
     });
     return res.json(users);
   } catch (err) { next(err); }
