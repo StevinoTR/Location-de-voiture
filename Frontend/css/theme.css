@@ -52,7 +52,7 @@ html.dark {
 
   --bg: #0a0e1a;
   --dark: #f1f5f9;
-  --white: #ffffff;
+  --white: #1a1d2e;
   --g50: #1a1d2e;
   --g100: #1e2133;
   --g200: #2a2d3a;
@@ -181,10 +181,30 @@ html.dark .data-table,
 html.dark table,
 html.dark .card,
 html.dark .page,
-html.dark .modal {
-  background: #111827 !important;
-  color: var(--theme-text) !important;
+html.dark .modal,
+html.dark body,
+html.dark .content,
+html.dark .section,
+html.dark .container {
+  background: #0a0e1a !important;
+  color: #f1f5f9 !important;
   border-color: var(--theme-border) !important;
+}
+
+/* Fix hardcoded white backgrounds */
+html.dark [style*="background: white"],
+html.dark [style*="background:white"],
+html.dark [style*="background:#fff"],
+html.dark [style*="background:#ffffff"] {
+  background: #1a1d2e !important;
+}
+
+/* Fix hardcoded white text */
+html.dark [style*="color: white"],
+html.dark [style*="color:white"],
+html.dark [style*="color:#fff"],
+html.dark [style*="color:#ffffff"] {
+  color: #f1f5f9 !important;
 }
 
 html.dark .theme-toggle,
@@ -208,4 +228,24 @@ html.dark .theme-toggle {
   border-color: #475569;
   background: rgba(99, 102, 241, 0.12);
   color: #e2e8f0;
+}
+
+/* Ensure buttons with white text remain readable */
+html.dark button,
+html.dark .btn,
+html.dark .button {
+  background: #2a2d3a !important;
+  color: #f1f5f9 !important;
+}
+
+html.dark .btn-primary,
+html.dark .btn-solid,
+html.dark .btn-add {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+  color: #ffffff !important;
+}
+
+html.dark .sb-logo-text,
+html.dark .sb-logo-name {
+  color: #ffffff !important;
 }
