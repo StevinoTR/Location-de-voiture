@@ -18,7 +18,7 @@ exports.list = async (req, res, next) => {
         attributes: ['id', 'prenom', 'nom'],
         include: [{
           model:      Entreprise,
-          as:         'entreprise',
+          as:         'entrepriseInfo',
           attributes: ['nom_entreprise', 'telephone']
         }]
       }],

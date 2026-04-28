@@ -73,7 +73,7 @@ exports.list = async (req, res, next) => {
       include: [
         { model: Car,  as: 'voiture', attributes: ['id', 'marque', 'modele', 'photoUrl'],
           include: [{ model: User, as: 'entreprise', attributes: ['id', 'prenom', 'nom'],
-            include: [{ model: Entreprise, as: 'entreprise', attributes: ['nom_entreprise'] }] }] },
+            include: [{ model: Entreprise, as: 'entrepriseInfo', attributes: ['nom_entreprise'] }] }] },
         { model: User, as: 'client',  attributes: ['id', 'prenom', 'nom', 'email'] }
       ],
       order: [['id', 'DESC']]
