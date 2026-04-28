@@ -24,6 +24,6 @@ const Entreprise = sequelize.define('Entreprise', {
 });
 
 Entreprise.belongsTo(User, { foreignKey: { name: 'userId', field: 'user_id' }, as: 'user' });
-User.hasOne(Entreprise,    { foreignKey: { name: 'userId', field: 'user_id' }, as: 'entreprise' });
+User.hasOne(Entreprise,    { foreignKey: { name: 'userId', field: 'user_id' }, as: 'entrepriseInfo' });
 
 module.exports = Entreprise;

@@ -61,7 +61,7 @@ exports.register = async (req, res, next) => {
         nom: user.nom,
         role: user.role,
         blocked: user.blocked,
-        entreprise: entreprise ? {
+        entrepriseInfo: entreprise ? {
           id: entreprise.id,
           nom_entreprise: entreprise.nom_entreprise,
           adresse: entreprise.adresse,

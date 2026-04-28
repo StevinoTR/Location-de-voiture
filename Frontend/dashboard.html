@@ -1313,8 +1313,8 @@
         return;
       }
 
-      const userLabel = isEntrepriseView() && store.user.entreprise && store.user.entreprise.nom_entreprise
-        ? store.user.entreprise.nom_entreprise
+      const userLabel = isEntrepriseView() && store.user.entrepriseInfo && store.user.entrepriseInfo.nom_entreprise
+        ? store.user.entrepriseInfo.nom_entreprise
         : `${store.user.prenom} ${store.user.nom}`;
       sub.textContent = `Bonjour, ${userLabel} 👋`;
     };
