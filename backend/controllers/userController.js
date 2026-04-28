@@ -14,7 +14,7 @@ exports.list = async (req, res, next) => {
       where,
       attributes: { exclude: ['password'] },
       include: [
-        { model: Entreprise, as: 'entreprise' },
+        { model: Entreprise, as: 'entrepriseInfo' },
         { model: Client,     as: 'client' },
         { model: Car,        as: 'voitures',    attributes: ['id'] },
         { model: Reservation, as: 'reservations', attributes: ['id'] }

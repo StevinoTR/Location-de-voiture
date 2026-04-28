@@ -1006,7 +1006,7 @@
       }
 
       tbody.innerHTML = users.map((u, i) => {
-        const ent = u.entreprise || {};
+        const ent = u.entrepriseInfo || {};
         const status = u.blocked ? 'Bloqué' : 'Actif';
         const blockLabel = u.blocked ? 'Débloquer' : 'Bloquer';
         const blockIcon = u.blocked ? '🔓' : '🔒';
