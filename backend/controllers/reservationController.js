@@ -1,3 +1,4 @@
+const { Op }      = require('sequelize');
 const Reservation = require('../models/Reservation');
 const Car         = require('../models/Car');
 const User        = require('../models/User');
@@ -21,15 +22,19 @@ exports.create = async (req, res, next) => {
       return res.status(409).json({ message: 'Voiture non disponible.' });
     }
 
-    const d1      = new Date(date_debut);
-    const d2      = new Date(date_fin);
+    const d1       = new Date(date_debut);
+    const d2       = new Date(date_fin);
     const nb_jours = Math.ceil((d2 - d1) / 86400000);
     const montant  = nb_jours * car.prix_jour;
 
     let reference = generateRef();
     let exists    = await Reservation.findOne({ where: { reference } });
-    while (exists) { reference = generateRef(); exists = await Reservation.findOne({ where: { reference } }); }
+    while (exists) {
+      reference = generateRef();
+      exists    = await Reservation.findOne({ where: { reference } });
+    }
 
+    // req.user est peuplé par softProtect si le client est connecté
     const clientId = req.user ? req.user.id : null;
 
     const resa = await Reservation.create({
@@ -54,38 +59,41 @@ exports.create = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-// GET /api/reservations
+// GET /api/reservations  (entreprise / admin)
 exports.list = async (req, res, next) => {
   try {
     const where = {};
 
     if (req.user.role === 'entreprise') {
       const cars = await Car.findAll({ where: { entrepriseId: req.user.id }, attributes: ['id'] });
-      if (cars.length === 0) {
-        return res.json([]);
-      }
+      if (cars.length === 0) return res.json([]);
       where.voitureId = cars.map(c => c.id);
     }
 
     const resas = await Reservation.findAll({
       where,
-      attributes: ['id', 'reference', 'date_debut', 'date_fin', 'statut', 'montant', 'nom_client', 'email_client', 'tel_client'],
+      attributes: ['id', 'reference', 'date_debut', 'date_fin', 'statut', 'montant',
+                   'nom_client', 'email_client', 'tel_client'],
       include: [
-        { model: Car,  as: 'voiture', attributes: ['id', 'marque', 'modele', 'photoUrl'],
-          include: [{ model: User, as: 'entreprise', attributes: ['id', 'prenom', 'nom'],
-            include: [{ model: Entreprise, as: 'entrepriseInfo', attributes: ['nom_entreprise'] }] }] },
-        { model: User, as: 'client',  attributes: ['id', 'prenom', 'nom', 'email'] }
+        {
+          model: Car, as: 'voiture', attributes: ['id', 'marque', 'modele', 'photoUrl'],
+          include: [{
+            model: User, as: 'entreprise', attributes: ['id', 'prenom', 'nom'],
+            include: [{ model: Entreprise, as: 'entrepriseInfo', attributes: ['nom_entreprise'] }]
+          }]
+        },
+        { model: User, as: 'client', attributes: ['id', 'prenom', 'nom', 'email'] }
       ],
       order: [['id', 'DESC']]
     });
 
-    // Populate nom_client from client data if missing
+    // Complète nom_client si manquant
     for (const resa of resas) {
       if (!resa.nom_client && resa.client) {
-        resa.nom_client = `${resa.client.prenom} ${resa.client.nom}`;
-        resa.email_client = resa.client.email;
-        // Optionally save to database
-        await resa.save();
+        await resa.update({
+          nom_client:   `${resa.client.prenom} ${resa.client.nom}`,
+          email_client: resa.client.email
+        });
       }
     }
 
@@ -96,11 +104,8 @@ exports.list = async (req, res, next) => {
 // GET /api/mes-reservations  ou  /api/client/reservations
 exports.mesReservations = async (req, res, next) => {
   try {
-    const { Op } = require('sequelize');
-
-    // Cherche toutes les réservations liées à cet utilisateur :
-    // - soit par clientId (réservation faite en étant connecté)
-    // - soit par email_client (réservation faite avec le même email)
+    // Cherche par clientId (réservations faites connecté)
+    // OU par email_client (réservations anciennes avec clientId = null)
     const where = {
       [Op.or]: [
         { clientId: req.user.id },
@@ -116,7 +121,7 @@ exports.mesReservations = async (req, res, next) => {
       order: [['id', 'DESC']]
     });
 
-    // Met à jour clientId si manquant pour les réservations retrouvées par email
+    // Corrige clientId manquant pour les prochaines fois
     for (const resa of resas) {
       if (!resa.clientId) {
         await resa.update({ clientId: req.user.id });

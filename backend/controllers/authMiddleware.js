@@ -1,6 +1,7 @@
 const jwt  = require('jsonwebtoken');
 const User = require('../models/User');
 
+// Middleware obligatoire : bloque si pas de token valide
 const protect = async (req, res, next) => {
   try {
     const header = req.headers.authorization;
@@ -25,6 +26,23 @@ const protect = async (req, res, next) => {
   }
 };
 
+// Middleware optionnel : identifie l'utilisateur si token présent, sinon continue quand même
+const softProtect = async (req, res, next) => {
+  try {
+    const header = req.headers.authorization;
+    if (!header || !header.startsWith('Bearer ')) return next();
+
+    const token   = header.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findByPk(decoded.id);
+    if (user && !user.blocked) req.user = user;
+  } catch (err) {
+    // Token invalide ou expiré => on continue sans user
+  }
+  next();
+};
+
 const authorize = (...roles) => (req, res, next) => {
   if (!roles.includes(req.user.role)) {
     return res.status(403).json({ message: 'Accès refusé.' });
@@ -32,17 +50,4 @@ const authorize = (...roles) => (req, res, next) => {
   next();
 };
 
-// Middleware optionnel : identifie l'utilisateur si token présent, mais ne bloque pas
-const softProtect = async (req, res, next) => {
-  try {
-    const header = req.headers.authorization;
-    if (!header || !header.startsWith('Bearer ')) return next();
-    const token   = header.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user    = await User.findByPk(decoded.id);
-    if (user && !user.blocked) req.user = user;
-  } catch (err) { /* token invalide ou expiré, on continue sans user */ }
-  next();
-};
-
-module.exports = { protect, authorize, softProtect };
+module.exports = { protect, softProtect, authorize };
