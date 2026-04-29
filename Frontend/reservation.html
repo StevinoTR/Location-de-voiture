@@ -816,7 +816,7 @@
 
   <script src="./js/theme.js"></script>
   <script type="module">
-    import { store, fetchVoitures, createReservation } from './js/app.js';
+    import { store, fetchVoitures, createReservation, normalizePhotoUrl } from './js/app.js';
 
     let currentCar = null;
 
@@ -846,7 +846,7 @@
 
         document.getElementById('sum-nom').textContent = `${currentCar.marque} ${currentCar.modele}`;
         document.getElementById('sum-prix').innerHTML = `${formatAr(currentCar.prix_jour)} <small>Ar / jour</small>`;
-        document.getElementById('sum-img').src = currentCar.photoUrl || '';
+        document.getElementById('sum-img').src = normalizePhotoUrl(currentCar.photoUrl) || '';
 
       } catch (err) {
         console.error(err);
