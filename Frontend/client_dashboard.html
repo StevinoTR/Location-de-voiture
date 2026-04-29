@@ -249,8 +249,9 @@
     </div>
   </footer>
 
-  <script src="./js/app.js"></script>
-  <script>
+  <script type="module">
+    import { store, clearAuth, fetchReservations, normalizePhotoUrl } from './js/app.js';
+
     // Validate token and role
     if (!store.token) {
       window.location.href = 'connexion.html';

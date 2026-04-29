@@ -227,5 +227,6 @@ export {
   store, login, logout, register,
   fetchVoitures, createVoiture, updateVoiture, removeVoiture, uploadVoiturePhoto,
   createReservation, fetchMesReservations, fetchReservations, updateReservation, confirmReservation, refuseReservation, terminateReservation,
-  fetchUsers, deleteUser, toggleBlockUser, fetchEntrepriseMe, fetchEntreprises
+  fetchUsers, deleteUser, toggleBlockUser, fetchEntrepriseMe, fetchEntreprises,
+  clearAuth, normalizePhotoUrl
 };
