@@ -140,37 +140,7 @@
     .status-confirmee { background: var(--green-lt); color: var(--green); }
     .status-en_attente { background: var(--orange-lt); color: var(--orange); }
     .status-annulee { background: var(--red-lt); color: var(--red); }
-    .status-refusee { background: var(--red-lt); color: var(--red); }
     .status-terminee { background: var(--g200); color: var(--g600); }
-
-    /* Notifications par réservation */
-    .notif-banner {
-      display: flex;
-      align-items: center;
-      gap: .6rem;
-      padding: .7rem 1.2rem;
-      border-radius: 10px;
-      font-size: .82rem;
-      font-weight: 600;
-      margin-top: .4rem;
-      width: fit-content;
-    }
-    .notif-banner.new-confirmed { background: var(--green-lt); color: var(--green); border: 1px solid #86efac; }
-    .notif-banner.new-refused { background: var(--red-lt); color: var(--red); border: 1px solid #fca5a5; }
-    .notif-banner.new-terminated { background: var(--g200); color: var(--g600); border: 1px solid #cbd5e1; }
-
-    /* Indicateur "nouveau" */
-    .new-dot {
-      width: 8px; height: 8px;
-      background: currentColor;
-      border-radius: 50%;
-      display: inline-block;
-      animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-      0%,100% { opacity:1; }
-      50% { opacity:.3; }
-    }
 
     .alert-box {
       display: none;
@@ -279,29 +249,27 @@
     </div>
   </footer>
 
+  <script src="./js/app.js"></script>
   <script>
-    const token = localStorage.getItem('carrent_token');
-    if (!token) {
+    // Validate token and role
+    if (!store.token) {
       window.location.href = 'connexion.html';
     }
     
-    // Attempt to decode user info for welcome text if available
-    try {
-      const userStr = localStorage.getItem('carrent_user');
-      if (userStr) {
-        const user = JSON.parse(userStr);
-        if (user.role !== 'client') {
-          window.location.href = 'connexion.html';
-        }
-        document.getElementById('welcomeText').innerHTML = `Bonjour, <em>${user.prenom || 'Client'}</em>`;
-      }
-    } catch (e) {}
-
-    function logout() {
-      localStorage.removeItem('carrent_token');
-      localStorage.removeItem('carrent_user');
-      window.location.href = 'index.html';
+    if (store.user && store.user.role !== 'client') {
+      window.location.href = 'connexion.html';
     }
+
+    // Update welcome text
+    if (store.user) {
+      document.getElementById('welcomeText').innerHTML = `Bonjour, <em>${store.user.prenom || 'Client'}</em>`;
+    }
+
+    // Logout helper
+    const logout = () => {
+      clearAuth();
+      window.location.href = 'index.html';
+    };
 
     const formatDate = (dateString) => {
       const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -312,40 +280,10 @@
       return new Intl.NumberFormat('fr-FR').format(price) + ' Ar';
     };
 
-    // Statut labels et icônes lisibles
-    const statutLabels = {
-      'en_attente': '⏳ En attente',
-      'confirmee':  '✅ Confirmée',
-      'annulee':    '❌ Annulée',
-      'refusee':    '🚫 Refusée',
-      'terminee':   '🏁 Terminée',
-    };
-
-    // Détecte les réservations dont le statut a changé depuis la dernière visite
-    const getSeenStatuts = () => {
-      try {
-        return JSON.parse(localStorage.getItem('carrent_seen_statuts') || '{}');
-      } catch { return {}; }
-    };
-    const saveSeenStatuts = (map) => {
-      localStorage.setItem('carrent_seen_statuts', JSON.stringify(map));
-    };
-
     const fetchReservations = async () => {
       try {
-        const res = await fetch('/api/client/reservations', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (res.status === 401 || res.status === 403) {
-          logout();
-          return;
-        }
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.message || 'Erreur serveur');
-        }
-        const data = await res.json();
-        renderReservations(data);
+        const resas = await apiFetch('/mes-reservations');
+        renderReservations(resas);
       } catch (err) {
         console.error('Error fetching reservations:', err);
         document.getElementById('resaBody').innerHTML = `
@@ -359,58 +297,33 @@
       }
     };
 
-    const showGlobalAlert = (reservations) => {
+    const showReservationAlert = (reservations) => {
       const alertBox = document.getElementById('reservationAlert');
       if (!alertBox) return;
 
-      const seenStatuts = getSeenStatuts();
-      const changes = [];
-
-      for (const r of reservations) {
-        const key = String(r.id);
-        const prevStatut = seenStatuts[key];
-        const currStatut = r.statut;
-
-        // Si le statut a changé et que le nouveau est final (pas juste en_attente)
-        if (prevStatut && prevStatut !== currStatut && currStatut !== 'en_attente') {
-          changes.push({ ref: r.reference || '#' + r.id, statut: currStatut });
-        }
-      }
-
-      // Mettre à jour la mémoire des statuts vus
-      const newSeen = {};
-      for (const r of reservations) newSeen[String(r.id)] = r.statut;
-      saveSeenStatuts(newSeen);
-
-      if (changes.length === 0) {
+      if (!reservations || reservations.length === 0) {
         alertBox.style.display = 'none';
         return;
       }
 
-      let html = '';
-      let hasConfirmed = false, hasRefused = false;
-
-      for (const c of changes) {
-        if (c.statut === 'confirmee') {
-          hasConfirmed = true;
-          html += `<div>✅ Votre réservation <strong>${c.ref}</strong> a été <strong>confirmée</strong> par l'entreprise.</div>`;
-        } else if (c.statut === 'annulee' || c.statut === 'refusee') {
-          hasRefused = true;
-          html += `<div>❌ Votre réservation <strong>${c.ref}</strong> a été <strong>refusée / annulée</strong> par l'entreprise.</div>`;
-        } else if (c.statut === 'terminee') {
-          html += `<div>🏁 Votre réservation <strong>${c.ref}</strong> est terminée.</div>`;
-        }
+      const confirmed = reservations.some(r => r.statut === 'confirmee');
+      const cancelled = reservations.some(r => r.statut === 'annulee');
+      if (!confirmed && !cancelled) {
+        alertBox.style.display = 'none';
+        return;
       }
 
-      alertBox.innerHTML = html;
-      alertBox.className = `alert-box ${hasRefused && !hasConfirmed ? 'error' : hasConfirmed && !hasRefused ? 'success' : 'info'}`;
+      const messages = [];
+      if (confirmed) messages.push('✅ Une réservation a été confirmée.');
+      if (cancelled) messages.push('❌ Une réservation a été annulée.');
+
+      alertBox.textContent = messages.join(' ');
+      alertBox.className = `alert-box ${cancelled && !confirmed ? 'error' : confirmed && !cancelled ? 'success' : 'info'}`;
       alertBox.style.display = 'flex';
-      alertBox.style.flexDirection = 'column';
-      alertBox.style.alignItems = 'flex-start';
     };
 
     const renderReservations = (reservations) => {
-      showGlobalAlert(reservations);
+      showReservationAlert(reservations);
       const tbody = document.getElementById('resaBody');
       if (!reservations || reservations.length === 0) {
         tbody.innerHTML = `
@@ -430,26 +343,12 @@
 
       tbody.innerHTML = reservations.map(r => {
         const voiture = r.voiture || {};
-        const statut = r.statut || 'en_attente';
-        const label = statutLabels[statut] || statut.replace('_', ' ');
-
-        // Notification inline si statut récemment changé à confirmé ou refusé
-        let inlineNotif = '';
-        if (statut === 'confirmee') {
-          inlineNotif = `<div class="notif-banner new-confirmed"><span class="new-dot"></span> Confirmée par l'entreprise</div>`;
-        } else if (statut === 'annulee' || statut === 'refusee') {
-          inlineNotif = `<div class="notif-banner new-refused"><span class="new-dot"></span> Refusée / Annulée par l'entreprise</div>`;
-        }
-
         return `
           <tr>
-            <td>
-              <strong>${r.reference || '#'+r.id}</strong>
-              ${inlineNotif}
-            </td>
+            <td><strong>${r.reference || '#'+r.id}</strong></td>
             <td>
               <div class="car-info">
-                <img class="car-img" src="${voiture.photoUrl || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2240%22%3E%3Crect width=%2260%22 height=%2240%22 fill=%22%23eef3ff%22/%3E%3C/svg%3E'}" alt="Voiture" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2240%22%3E%3Crect width=%2260%22 height=%2240%22 fill=%22%23eef3ff%22/%3E%3C/svg%3E'">
+                <img class="car-img" src="${normalizePhotoUrl(voiture.photoUrl) || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2240%22%3E%3Crect width=%2260%22 height=%2240%22 fill=%22%23eef3ff%22/%3E%3C/svg%3E'}" alt="Voiture" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2240%22%3E%3Crect width=%2260%22 height=%2240%22 fill=%22%23eef3ff%22/%3E%3C/svg%3E'">
                 <div class="car-details">
                   <h4>${voiture.modele || 'Inconnu'}</h4>
                   <span>${voiture.marque || ''}</span>
@@ -462,8 +361,8 @@
             </td>
             <td><strong>${formatPrice(r.montant)}</strong></td>
             <td>
-              <span class="status-badge status-${statut}">
-                ${label}
+              <span class="status-badge status-${r.statut}">
+                ${r.statut.replace('_', ' ')}
               </span>
             </td>
           </tr>
