@@ -93,16 +93,35 @@ exports.list = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-// GET /api/mes-reservations
+// GET /api/mes-reservations  ou  /api/client/reservations
 exports.mesReservations = async (req, res, next) => {
   try {
+    const { Op } = require('sequelize');
+
+    // Cherche toutes les réservations liées à cet utilisateur :
+    // - soit par clientId (réservation faite en étant connecté)
+    // - soit par email_client (réservation faite avec le même email)
+    const where = {
+      [Op.or]: [
+        { clientId: req.user.id },
+        { email_client: req.user.email }
+      ]
+    };
+
     const resas = await Reservation.findAll({
-      where: { clientId: req.user.id },
+      where,
       include: [
         { model: Car, as: 'voiture', attributes: ['id', 'marque', 'modele', 'photoUrl', 'prix_jour'] }
       ],
       order: [['id', 'DESC']]
     });
+
+    // Met à jour clientId si manquant pour les réservations retrouvées par email
+    for (const resa of resas) {
+      if (!resa.clientId) {
+        await resa.update({ clientId: req.user.id });
+      }
+    }
 
     return res.json(resas);
   } catch (err) { next(err); }
