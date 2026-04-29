@@ -250,7 +250,7 @@
   </footer>
 
   <script type="module">
-    import { store, clearAuth, fetchReservations, normalizePhotoUrl } from './js/app.js';
+    import { store, clearAuth, fetchMesReservations, normalizePhotoUrl } from './js/app.js';
 
     // Validate token and role
     if (!store.token) {
@@ -271,6 +271,7 @@
       clearAuth();
       window.location.href = 'index.html';
     };
+    window.logout = logout;
 
     const formatDate = (dateString) => {
       const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -283,7 +284,7 @@
 
     const fetchReservations = async () => {
       try {
-        const resas = await apiFetch('/mes-reservations');
+        const resas = await fetchMesReservations();
         renderReservations(resas);
       } catch (err) {
         console.error('Error fetching reservations:', err);
