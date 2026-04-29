@@ -249,29 +249,27 @@
     </div>
   </footer>
 
+  <script src="./js/app.js"></script>
   <script>
-    const token = localStorage.getItem('carrent_token');
-    if (!token) {
+    // Validate token and role
+    if (!store.token) {
       window.location.href = 'connexion.html';
     }
     
-    // Attempt to decode user info for welcome text if available
-    try {
-      const userStr = localStorage.getItem('carrent_user');
-      if (userStr) {
-        const user = JSON.parse(userStr);
-        if (user.role !== 'client') {
-          window.location.href = 'connexion.html';
-        }
-        document.getElementById('welcomeText').innerHTML = `Bonjour, <em>${user.prenom || 'Client'}</em>`;
-      }
-    } catch (e) {}
-
-    function logout() {
-      localStorage.removeItem('carrent_token');
-      localStorage.removeItem('carrent_user');
-      window.location.href = 'index.html';
+    if (store.user && store.user.role !== 'client') {
+      window.location.href = 'connexion.html';
     }
+
+    // Update welcome text
+    if (store.user) {
+      document.getElementById('welcomeText').innerHTML = `Bonjour, <em>${store.user.prenom || 'Client'}</em>`;
+    }
+
+    // Logout helper
+    const logout = () => {
+      clearAuth();
+      window.location.href = 'index.html';
+    };
 
     const formatDate = (dateString) => {
       const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -284,19 +282,8 @@
 
     const fetchReservations = async () => {
       try {
-        const res = await fetch('/api/client/reservations', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (res.status === 401 || res.status === 403) {
-          logout();
-          return;
-        }
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.message || 'Erreur serveur');
-        }
-        const data = await res.json();
-        renderReservations(data);
+        const resas = await apiFetch('/mes-reservations');
+        renderReservations(resas);
       } catch (err) {
         console.error('Error fetching reservations:', err);
         document.getElementById('resaBody').innerHTML = `
@@ -361,7 +348,7 @@
             <td><strong>${r.reference || '#'+r.id}</strong></td>
             <td>
               <div class="car-info">
-                <img class="car-img" src="${voiture.photoUrl || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2240%22%3E%3Crect width=%2260%22 height=%2240%22 fill=%22%23eef3ff%22/%3E%3C/svg%3E'}" alt="Voiture" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2240%22%3E%3Crect width=%2260%22 height=%2240%22 fill=%22%23eef3ff%22/%3E%3C/svg%3E'">
+                <img class="car-img" src="${normalizePhotoUrl(voiture.photoUrl) || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2240%22%3E%3Crect width=%2260%22 height=%2240%22 fill=%22%23eef3ff%22/%3E%3C/svg%3E'}" alt="Voiture" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2240%22%3E%3Crect width=%2260%22 height=%2240%22 fill=%22%23eef3ff%22/%3E%3C/svg%3E'">
                 <div class="car-details">
                   <h4>${voiture.modele || 'Inconnu'}</h4>
                   <span>${voiture.marque || ''}</span>
