@@ -916,6 +916,21 @@
       document.getElementById('st-resa').textContent = reservations.length;
     };
 
+    const isCurrentAdminReservation = (resa) => {
+      if (!resa || !resa.date_fin) return true;
+      const endDate = new Date(resa.date_fin);
+      const now = new Date();
+      if (resa.statut === 'annulee' && endDate < now) {
+        return false;
+      }
+      return true;
+    };
+
+    const filterCurrentAdminReservations = (reservations) => {
+      if (!Array.isArray(reservations)) return [];
+      return reservations.filter(isCurrentAdminReservation);
+    };
+
     const renderReservationsOverview = (reservations) => {
       const container = document.getElementById('ov-resa');
       if (!container) return;
@@ -1119,12 +1134,13 @@
           fetchReservations(),
         ]);
 
-        setStats({ entreprises, clients, voitures, reservations });
+        const visibleReservations = filterCurrentAdminReservations(reservations);
+        setStats({ entreprises, clients, voitures, reservations: visibleReservations });
         renderEntreprises(entreprises);
         renderClients(clients);
         renderVoituresAdmin(voitures);
-        renderReservationsOverview(reservations);
-        renderReservationsTable(reservations);
+        renderReservationsOverview(visibleReservations);
+        renderReservationsTable(visibleReservations);
         attachDeleteListeners();
       } catch (err) {
         console.error(err);
