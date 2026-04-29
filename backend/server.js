@@ -18,6 +18,9 @@ const carRoutes   = require('./routes/cars');
 const resaRoutes  = require('./routes/reservations');
 const userRoutes  = require('./routes/users');
 
+const { protect } = require('./middleware/authMiddleware');
+const resaCtrl    = require('./controllers/reservationController');
+
 const app = express();
 
 // CORS
@@ -39,7 +42,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const frontendPath = path.join(__dirname, '../Frontend');
 app.use(express.static(frontendPath));
 
-// Routes API
+// ─── Routes dashboard client (en PREMIER, avant les montages génériques) ───
+app.get('/api/mes-reservations',    protect, resaCtrl.mesReservations);
+app.get('/api/client/reservations', protect, resaCtrl.mesReservations);
+
+// ─── Routes API principales ────────────────────────────────────────────────
 app.use('/api/auth',         authRoutes);
 app.use('/api/voitures',     carRoutes);
 app.use('/api/reservations', resaRoutes);
@@ -80,7 +87,6 @@ const start = async () => {
       console.log('✔ Connexion à la base de données réussie.');
     } catch (err) {
       console.error('❌ Connexion DB échouée :', err.message);
-      // Ne pas quitter, pour que Render détecte le port
     }
   });
 };
