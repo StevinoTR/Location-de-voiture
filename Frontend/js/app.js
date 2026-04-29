@@ -161,7 +161,10 @@ const fetchMesReservations = async () => {
 };
 
 const fetchReservations = async () => {
-  const list = await apiFetch('/reservations');
+  // Les clients ne peuvent pas accéder à /api/reservations.
+  // Ils doivent utiliser /api/mes-reservations pour leurs propres réservations.
+  const path = store.user?.role === 'client' ? '/mes-reservations' : '/reservations';
+  const list = await apiFetch(path);
   return Array.isArray(list) ? list.map(normalizeReservation) : normalizeReservation(list);
 };
 

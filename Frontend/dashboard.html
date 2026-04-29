@@ -1653,6 +1653,10 @@
         window.location.href = 'connexion.html';
         return;
       }
+      if (store.user.role === 'client') {
+        window.location.href = 'client_dashboard.html';
+        return;
+      }
       setHeader();
       await refreshData();
       showSection('dashboard');
