@@ -3,6 +3,7 @@ const fs   = require('fs');
 const Car  = require('../models/Car');
 const User = require('../models/User');
 const Entreprise = require('../models/Entreprise');
+const cloudinary = require('../config/cloudinary');
 
 // GET /api/voitures
 exports.list = async (req, res, next) => {
@@ -123,33 +124,42 @@ exports.uploadPhoto = async (req, res, next) => {
       return res.status(400).json({ message: 'Fichier trop volumineux. Maximum 5MB.' });
     }
 
-    const ext      = path.extname(req.file.originalname).toLowerCase();
-    const filename = `car_${car.id}_${Date.now()}${ext}`;
-    const dest     = path.join(__dirname, '../uploads', filename);
+    try {
+      // Upload to Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'carrent/cars',
+        public_id: `car_${car.id}_${Date.now()}`,
+        resource_type: 'auto',
+        overwrite: true
+      });
 
-    // Créer le dossier uploads s'il n'existe pas
-    const uploadsDir = path.join(__dirname, '../uploads');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-
-    // Déplacer le fichier
-    fs.renameSync(req.file.path, dest);
-
-    // Supprimer l'ancienne photo si elle existe
-    if (car.photoUrl) {
-      const oldPath = path.join(__dirname, '..', car.photoUrl);
-      if (fs.existsSync(oldPath)) {
+      // Supprimer l'ancienne photo de Cloudinary si elle existe
+      if (car.photoUrl && car.photoUrl.includes('cloudinary')) {
         try {
-          fs.unlinkSync(oldPath);
+          // Extraire le public_id de l'URL Cloudinary
+          const urlParts = car.photoUrl.split('/');
+          const oldPublicId = urlParts[urlParts.length - 1].split('.')[0];
+          await cloudinary.uploader.destroy(`carrent/cars/${oldPublicId}`);
         } catch (err) {
-          console.warn('Impossible de supprimer l\'ancienne photo:', err.message);
+          console.warn('Impossible de supprimer l\'ancienne photo Cloudinary:', err.message);
         }
       }
-    }
 
-    await car.update({ photoUrl: `/uploads/${filename}` });
-    return res.json({ photoUrl: `/uploads/${filename}` });
+      // Nettoyer le fichier temporaire
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
+      await car.update({ photoUrl: result.secure_url });
+      return res.json({ photoUrl: result.secure_url });
+    } catch (cloudinaryErr) {
+      // Nettoyer le fichier temporaire en cas d'erreur
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      console.error('Erreur Cloudinary:', cloudinaryErr);
+      return res.status(500).json({ message: 'Erreur lors de l\'upload: ' + cloudinaryErr.message });
+    }
   } catch (err) {
     // Nettoyer le fichier temporaire en cas d'erreur
     if (req.file && fs.existsSync(req.file.path)) {
